@@ -95,9 +95,24 @@ public abstract class ModbusRequest extends ModbusMessageImpl {
             case Modbus.READ_FIFO_QUEUE:
                 request = new ReadFIFOQueueRequest();
                 break;
-            case Modbus.READ_MEI:
-                request = new ReadMEIRequest();
-                break;
+//            case Modbus.READ_MEI:
+//                request = new ReadMEIRequest();
+//                break;
+            case Modbus.FUNCTION_CODE_40:
+            	request = new FC40WriteTaskRequest();
+            	break;
+            case Modbus.FUNCTION_CODE_41:
+            	request = new FC41WriteTaskRequest();
+            	break;
+            case Modbus.FUNCTION_CODE_42:
+            	request = new FC42WriteTaskRequest();
+            	break;
+            case Modbus.FUNCTION_CODE_43:
+            	request = new FC43WriteTaskRequest();
+            	break;
+            case Modbus.FUNCTION_CODE_44:
+            	request = new FC44WriteTaskRequest();
+            	break;
             default:
                 request = new IllegalFunctionRequest(functionCode);
                 break;

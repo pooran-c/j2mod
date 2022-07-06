@@ -43,13 +43,14 @@ public class AbstractTestModbusSerialRTUMaster extends AbstractTestModbusSerialA
         try {
             slave = createSerialSlave(true);
 
-            // Create master
-            SerialParameters parameters = new SerialParameters();
-            parameters.setPortName("CNCA0");
-            parameters.setOpenDelay(1000);
-            parameters.setEncoding(Modbus.SERIAL_ENCODING_RTU);
-            master = new ModbusSerialMaster(parameters);
-            master.connect();
+        	// Create master
+			SerialParameters parameters = new SerialParameters();
+			parameters.setPortName("COM2");
+			parameters.setBaudRate(19200);
+			parameters.setOpenDelay(1000);
+			parameters.setEncoding(Modbus.SERIAL_ENCODING_RTU);
+			master = new ModbusSerialMaster(parameters);
+			master.connect();
         }
         catch (Exception e) {
             tearDownSlave();

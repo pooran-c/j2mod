@@ -109,9 +109,24 @@ public abstract class ModbusResponse extends ModbusMessageImpl {
             case Modbus.READ_FIFO_QUEUE:
                 response = new ReadFIFOQueueResponse();
                 break;
-            case Modbus.READ_MEI:
-                response = new ReadMEIResponse();
-                break;
+//            case Modbus.READ_MEI:
+//                response = new ReadMEIResponse();
+//                break;
+            case Modbus.FUNCTION_CODE_40:
+            	response = new FC40WriteTaskResponse();
+            	break;
+            case Modbus.FUNCTION_CODE_41:
+            	response = new FC41WriteTaskResponse();
+            	break;
+            case Modbus.FUNCTION_CODE_42:
+            	response = new FC42WriteTaskResponse();
+            	break;
+            case Modbus.FUNCTION_CODE_43:
+            	response = new FC43WriteTaskResponse();
+            	break;
+            case Modbus.FUNCTION_CODE_44:
+            	response = new FC44WriteTaskResponse();
+            	break;
             default:
                 if ((functionCode & 0x80) != 0) {
                     response = new ExceptionResponse(functionCode);

@@ -20,6 +20,7 @@ import com.ghgande.j2mod.modbus.io.AbstractModbusTransport;
 import com.ghgande.j2mod.modbus.io.ModbusSerialTransaction;
 import com.ghgande.j2mod.modbus.net.AbstractSerialConnection;
 import com.ghgande.j2mod.modbus.net.SerialConnection;
+import com.ghgande.j2mod.modbus.procimg.Register;
 import com.ghgande.j2mod.modbus.util.SerialParameters;
 
 /**
@@ -127,4 +128,6 @@ public class ModbusSerialMaster extends AbstractModbusMaster {
     public boolean isConnected() {
         return connection != null && connection.isOpen();
     }
+
+
 }
