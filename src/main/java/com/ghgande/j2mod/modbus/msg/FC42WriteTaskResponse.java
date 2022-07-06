@@ -7,111 +7,61 @@ import java.io.IOException;
 import com.ghgande.j2mod.modbus.Modbus;
 
 public class FC42WriteTaskResponse extends ModbusResponse {
-    // instance attributes
-    private int wordCount;
-    private int reference;
 
-    /**
-     * Constructs a new <tt>WriteMultipleRegistersResponse</tt> instance.
-     */
-    public FC42WriteTaskResponse() {
-        super();
+	private static int LENGTH_OF_MSG = 1;
+	private int msgLength;
+	private int responseData;
 
-        setFunctionCode(Modbus.FUNCTION_CODE_42);
-        setDataLength(4);
-    }
+	public FC42WriteTaskResponse() {
+		super();
+		setMsgLength(LENGTH_OF_MSG);
+		setDataLength(2);
+		setFunctionCode(Modbus.FUNCTION_CODE_42);
+	}
 
-    /**
-     * Constructs a new <tt>WriteMultipleRegistersResponse</tt> instance.
-     *
-     * @param reference the offset to start writing from.
-     * @param wordCount the number of words (registers) to be written.
-     */
-    public FC42WriteTaskResponse(int reference, int wordCount) {
-        super();
+	public int getResponseData() {
+		return responseData;
+	}
 
-        setFunctionCode(Modbus.FUNCTION_CODE_42);
-        setDataLength(4);
+	public void setResponseData(int responseData) {
+		this.responseData = responseData;
+	}
 
-        this.reference = reference;
-        this.wordCount = wordCount;
-    }
+	public int getMsgLength() {
+		return msgLength;
+	}
 
-    /**
-     * Returns the reference of the register to start writing to with this
-     * <tt>WriteMultipleRegistersResponse</tt>.
-     * <p>
-     *
-     * @return the reference of the register to start writing to as <tt>int</tt>
-     * .
-     */
-    public int getReference() {
-        return reference;
-    }
+	public void setMsgLength(int msgLength) {
+		this.msgLength = msgLength;
+	}
 
-    /**
-     * Sets the reference of the register to start writing to with this
-     * <tt>WriteMultipleRegistersResponse</tt>.
-     * <p>
-     *
-     * @param ref the reference of the register to start writing to as
-     *            <tt>int</tt>.
-     */
-    public void setReference(int ref) {
-        reference = ref;
-    }
+	public FC42WriteTaskResponse(int value) {
+		super();
+		setMsgLength(LENGTH_OF_MSG);
+		setDataLength(2);
+		setFunctionCode(Modbus.FUNCTION_CODE_42);
+	}
 
-    /**
-     * Returns the number of bytes that have been written.
-     *
-     * @return the number of bytes that have been written as <tt>int</tt>.
-     */
-    public int getByteCount() {
-        return wordCount * 2;
-    }
+	@Override
+	public void writeData(DataOutput dout) throws IOException {
+		dout.write(getMsgLength());
+	}
 
-    /**
-     * Returns the number of words that have been written. The returned value
-     * should be half of the byte count of the response.
-     * <p>
-     *
-     * @return the number of words that have been written as <tt>int</tt>.
-     */
-    public int getWordCount() {
-        return wordCount;
-    }
+	@Override
+	public void readData(DataInput din) throws IOException {
+		setResponseData(din.readUnsignedByte());
+		setMsgLength(LENGTH_OF_MSG);
+		setDataLength(4);
+	}
 
-    /**
-     * Sets the number of words that have been returned.
-     *
-     * @param count the number of words as <tt>int</tt>.
-     */
-    public void setWordCount(int count) {
-        wordCount = count;
-    }
+	@Override
+	public byte[] getMessage() {
 
-    @Override
-    public void writeData(DataOutput dout) throws IOException {
-        dout.write(getMessage());
-    }
+		byte[] result = new byte[2];
+		result[0] = (byte) ((responseData) & 0xff);
+		result[1] = (byte) ((responseData));
 
-    @Override
-    public void readData(DataInput din) throws IOException {
-        setReference(din.readUnsignedShort());
-        setWordCount(din.readUnsignedShort());
+		return result;
+	}
 
-        setDataLength(4);
-    }
-
-    @Override
-    public byte[] getMessage() {
-        byte[] result = new byte[4];
-
-        result[0] = (byte)((reference >> 8) & 0xff);
-        result[1] = (byte)(reference & 0xff);
-        result[2] = (byte)((wordCount >> 8) & 0xff);
-        result[3] = (byte)(wordCount & 0xff);
-
-        return result;
-    }
 }

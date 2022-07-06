@@ -1,7 +1,5 @@
 package openems;
 
-import java.io.FileWriter;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -10,14 +8,11 @@ import java.util.Arrays;
 import com.ghgande.j2mod.modbus.ModbusException;
 import com.ghgande.j2mod.modbus.io.ModbusRTUTransport;
 import com.ghgande.j2mod.modbus.io.ModbusTransaction;
-import com.ghgande.j2mod.modbus.msg.FC40WriteTaskRequest;
-import com.ghgande.j2mod.modbus.msg.FC40WriteTaskResponse;
 import com.ghgande.j2mod.modbus.msg.FC42WriteTaskRequest;
 import com.ghgande.j2mod.modbus.msg.ModbusRequest;
 import com.ghgande.j2mod.modbus.net.AbstractSerialConnection;
 import com.ghgande.j2mod.modbus.net.SerialConnection;
 import com.ghgande.j2mod.modbus.procimg.AdditionalRegister;
-import com.ghgande.j2mod.modbus.procimg.SimpleRegister;
 import com.ghgande.j2mod.modbus.util.SerialParameters;
 
 
@@ -30,7 +25,7 @@ public class dofc42 {
 
 	}
 
-	public static String PORTNAME = "COM4";
+	public static String PORTNAME = "COM3";
 	public static int REFERENCE = 1;
 	public static int UNITID = 1;
 	public static int BAUDRATE = 19200;
@@ -80,15 +75,18 @@ public class dofc42 {
 		boolean isSuccesful = false;
 		ModbusRequest req = null;
 
+		int counter =  1;
 		for (byte[] b : newArray) {
+			
 			AdditionalRegister[] reg2 = new AdditionalRegister[b.length];
 
-			for (int i = 0; i < 1; i++) {
+			for (int i = 0; i < b.length; i++) {
 				reg2[i] = new AdditionalRegister(b[i]);
 				System.out.println(reg2[i]);
 			}
 
-			FC42WriteTaskRequest fc42WriteTaskRequest = new FC42WriteTaskRequest(reg2);
+			FC42WriteTaskRequest fc42WriteTaskRequest = new FC42WriteTaskRequest(reg2, counter);
+			counter ++;
 			req = fc42WriteTaskRequest;
 
 			req.setUnitID(UNITID);
@@ -128,9 +126,9 @@ public class dofc42 {
 		
 //		for (byte[] b : newArray) {
 //			for (byte b1 : b) {
-//				//System.out.print(b1 + "| "  );
+//				System.out.print(b1 + "| "  );
 //			}
-//			//System.out.println();
+//			System.out.println();
 //		}
 		return newArray;
 

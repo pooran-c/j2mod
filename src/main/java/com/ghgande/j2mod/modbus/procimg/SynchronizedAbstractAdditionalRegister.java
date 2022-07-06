@@ -30,7 +30,7 @@ public abstract class SynchronizedAbstractAdditionalRegister implements Register
 	 * Note that a superclass may set register to null to create a gap in a Modbus
 	 * map.
 	 */
-	protected byte[] register = new byte[4];
+	protected byte[] register = new byte[2];
 
 	@Override
 	public synchronized int getValue() {
@@ -39,9 +39,11 @@ public abstract class SynchronizedAbstractAdditionalRegister implements Register
 		}
 
 		return ((register[0] & 0xff) | //
-				(register[1] & 0xff) << 8 | //
-				(register[2] & 0xff) << 16 | //
-				(register[3] & 0xff) << 24);
+				(register[1] & 0xff) << 8 );
+				
+//				| //
+//				(register[2] & 0xff) << 16 | //
+//				(register[3] & 0xff) << 24);
 	}
 
 	@Override
