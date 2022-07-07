@@ -14,7 +14,7 @@ import com.ghgande.j2mod.modbus.procimg.AdditionalRegister;
 import com.ghgande.j2mod.modbus.procimg.Register;
 import com.ghgande.j2mod.modbus.util.SerialParameters;
 
-public class dofc40 {
+public class DoFc40 {
 
 	public static class Codes {
 
@@ -54,6 +54,7 @@ public class dofc40 {
 		transport.setTimeout(500);
 
 		if (getFc40ResponseRTU(transport, DATA).getFunctionCode() == Codes.CODE_40) {
+			
 			System.out.println(" Success in fc 40 ");
 		} else {
 			System.out.println(" Failure in fc 40 ");
