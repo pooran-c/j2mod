@@ -11,7 +11,6 @@ import com.ghgande.j2mod.modbus.msg.ModbusRequest;
 import com.ghgande.j2mod.modbus.net.AbstractSerialConnection;
 import com.ghgande.j2mod.modbus.net.SerialConnection;
 import com.ghgande.j2mod.modbus.procimg.AdditionalRegister;
-import com.ghgande.j2mod.modbus.procimg.Register;
 import com.ghgande.j2mod.modbus.util.SerialParameters;
 
 public class DoFc40 {
@@ -27,7 +26,7 @@ public class DoFc40 {
 
 	public static String PORTNAME = "COM3";
 	public static int REFERENCE = 1;
-	public static int DATA = 513227; // 254
+	public static int DATA = 572042494; // 254
 	public static int UNITID = 1;
 	public static int BAUDRATE = 19200;
 
@@ -53,29 +52,35 @@ public class DoFc40 {
 		transport.setEcho(false);
 		transport.setTimeout(500);
 
-		if (getFc40ResponseRTU(transport, DATA).getFunctionCode() == Codes.CODE_40) {
-			
-			System.out.println(" Success in fc 40 ");
-		} else {
-			System.out.println(" Failure in fc 40 ");
+		getFc40ResponseRTU(transport, DATA);
+
+	}
+
+	public static byte[] hexStringToByteArray(int a) {
+		String s = Integer.toHexString(a);
+		byte[] data = new byte[4];
+
+		StringBuilder sb = new StringBuilder();
+		while (sb.length() < 8 - s.length()) {
+			sb.append('0');
+		}
+		sb.append(s);
+
+		for (int i = 0; i < sb.length() / 2; i++) {
+			data[i] = (byte) (0xFF & (Integer.parseInt(sb.substring(2 * i, 2 * i + 2), 16)));
 		}
 
+		return data;
 	}
 
 	private static FC40WriteTaskResponse getFc40ResponseRTU(ModbusRTUTransport transport, int sizeOfTheUpdateFile) {
 
 		FC40WriteTaskRequest fc40WriteTaskRequest = new FC40WriteTaskRequest();
-		
-		
 
-		byte[] s = new byte[] { (byte) 0x00, (byte) 0x08, (byte) 0xAC, (byte) 0xFE };
-		//writeRegisters = new AdditionalRegister(s);
+		byte[] sizeOfTheUpdateFileToByte = hexStringToByteArray(sizeOfTheUpdateFile);
 
 		// Set the data to be written into register
-		fc40WriteTaskRequest.setRegister(new AdditionalRegister(s));
-
-		// Set the reference
-		// fc40WriteTaskRequest.setReference(REFERENCE);
+		fc40WriteTaskRequest.setRegister(new AdditionalRegister(sizeOfTheUpdateFileToByte));
 
 		// Set the Unit id
 		fc40WriteTaskRequest.setUnitID(UNITID);
