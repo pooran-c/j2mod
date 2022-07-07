@@ -240,13 +240,13 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
 //					readRequestData(0, out);
 //					break;
 
+				case Modbus.FUNCTION_CODE_42:
 				case Modbus.FUNCTION_CODE_40:
 					readRequestData(2, out);
 					break;
 				case Modbus.FUNCTION_CODE_41:
 					readRequestData(2, out);
 					break;
-				case Modbus.FUNCTION_CODE_42:
 				case Modbus.FUNCTION_CODE_43:
 				case Modbus.FUNCTION_CODE_44:
 					break;

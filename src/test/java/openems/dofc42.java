@@ -13,12 +13,13 @@ import com.ghgande.j2mod.modbus.msg.ModbusRequest;
 import com.ghgande.j2mod.modbus.net.AbstractSerialConnection;
 import com.ghgande.j2mod.modbus.net.SerialConnection;
 import com.ghgande.j2mod.modbus.procimg.AdditionalRegister;
+import com.ghgande.j2mod.modbus.procimg.AdditionalRegister2;
 import com.ghgande.j2mod.modbus.util.SerialParameters;
 
 
 
 public class dofc42 {
-	private final static int SIZEOFPAYLOAD = 64;
+	private final static int SIZEOFPAYLOAD = 128;
 	public static class Codes {
 
 		public static final int CODE_43 = 66;
@@ -72,16 +73,19 @@ public class dofc42 {
 	private static boolean getFc42ResponseRTU(ModbusRTUTransport transport, byte[] allBytes) {
 
 		byte[][] newArray = getData(allBytes, SIZEOFPAYLOAD);
+		// newArray[8019][64]
+		System.out.println(newArray.length);
+		System.out.println(newArray[0].length);
 		boolean isSuccesful = false;
 		ModbusRequest req = null;
 
 		int counter =  1;
 		for (byte[] b : newArray) {
 			
-			AdditionalRegister[] reg2 = new AdditionalRegister[b.length];
+			AdditionalRegister2[] reg2 = new AdditionalRegister2[b.length];
 
 			for (int i = 0; i < b.length; i++) {
-				reg2[i] = new AdditionalRegister(b[i]);
+				reg2[i] = new AdditionalRegister2(b[i]);
 				System.out.println(reg2[i]);
 			}
 

@@ -26,8 +26,8 @@ public interface Modbus {
 	int FUNCTION_CODE_40 = 64;
 	int FUNCTION_CODE_41 = 65;
 	int FUNCTION_CODE_42 = 66;
-	int FUNCTION_CODE_43 = 43;
-	int FUNCTION_CODE_44 = 44;
+	int FUNCTION_CODE_43 = 67;
+	int FUNCTION_CODE_44 = 68;
 
 	/**
 	 * Defines the class 1 function code for <tt>read coils</tt>.

@@ -12,7 +12,7 @@ import com.ghgande.j2mod.modbus.procimg.Register;
 
 public class FC42WriteTaskRequest extends ModbusRequest {
 
-	private static int LENGTH_OF_MSG = 130;
+	private static int LENGTH_OF_MSG = 128;
 	private static int ADDRESS = 1;
 
 	private int msgLength;
@@ -101,9 +101,9 @@ public class FC42WriteTaskRequest extends ModbusRequest {
 
 	@Override
 	public void writeData(DataOutput dout) throws IOException {
-		dout.write(getFrameNumber());
-		dout.write(getMsgLength());
 
+		dout.write(getMsgLength());
+		dout.write(getFrameNumber());
 		for (Register r : register) {
 			dout.write(r.toBytes());
 		}
@@ -117,15 +117,12 @@ public class FC42WriteTaskRequest extends ModbusRequest {
 
 	@Override
 	public byte[] getMessage() {
-		byte[] result = new byte[register.length * 2];
+		byte[] result = new byte[register.length];
 
-//		result[1] = (byte) (register[0].getValue()>>8);
-		int count = 0;
 		for (int i = 0; i < register.length - 1; i++) {
 
-			result[count] = (byte) (register[i].getValue() >> 8);
-			result[count + 1] = (byte) (register[i].getValue());
-			count = count + 2;
+			result[i] = (byte) (register[i].getValue());
+
 		}
 
 //		result[0] = (byte) (register[0].getValue());

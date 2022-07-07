@@ -22,7 +22,7 @@ package com.ghgande.j2mod.modbus.procimg;
  * @author Steve O'Hara (4NG)
  * @version 2.0 (March 2016)
  */
-public abstract class SynchronizedAbstractAdditionalRegister implements Register {
+public abstract class SynchronizedAbstractAdditionalRegister2 implements Register {
 
 	/**
 	 * The word (<tt>byte[2]</tt>) holding the state of this register.
@@ -30,7 +30,7 @@ public abstract class SynchronizedAbstractAdditionalRegister implements Register
 	 * Note that a superclass may set register to null to create a gap in a Modbus
 	 * map.
 	 */
-	protected byte[] register = new byte[4];
+	protected byte[] register = new byte[1];
 
 	@Override
 	public synchronized int getValue() {
@@ -38,10 +38,8 @@ public abstract class SynchronizedAbstractAdditionalRegister implements Register
 			throw new IllegalAddressException();
 		}
 
-		return ((register[0] & 0xff) | //
-				(register[1] & 0xff) << 8 | //
-				(register[2] & 0xff) << 16 | //
-				(register[3] & 0xff) << 24);
+		return ((register[0] & 0xff));
+
 	}
 
 	@Override
@@ -71,8 +69,8 @@ public abstract class SynchronizedAbstractAdditionalRegister implements Register
 			throw new IllegalAddressException();
 		}
 
-		register[0] = (byte) (0xff & (s >> 8));
-		register[1] = (byte) (0xff & s);
+		register[0] = (byte) (0xff & s);
+
 	}
 
 	@Override
@@ -85,9 +83,7 @@ public abstract class SynchronizedAbstractAdditionalRegister implements Register
 			}
 
 			register[0] = bytes[0];
-			register[1] = bytes[1];
-			register[2] = bytes[2];
-			register[3] = bytes[3];
+
 		}
 	}
 
@@ -97,8 +93,8 @@ public abstract class SynchronizedAbstractAdditionalRegister implements Register
 			throw new IllegalAddressException();
 		}
 
-		register[0] = (byte) (0xff & (v >> 8));
-		register[1] = (byte) (0xff & v);
+		register[0] = (byte) (0xff & (v));
+
 	}
 
 }

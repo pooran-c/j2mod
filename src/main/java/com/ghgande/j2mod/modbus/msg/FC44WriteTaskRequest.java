@@ -4,38 +4,80 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import com.ghgande.j2mod.modbus.Modbus;
 import com.ghgande.j2mod.modbus.net.AbstractModbusListener;
+import com.ghgande.j2mod.modbus.procimg.IllegalAddressException;
+import com.ghgande.j2mod.modbus.procimg.ProcessImage;
+import com.ghgande.j2mod.modbus.procimg.Register;
 
 public class FC44WriteTaskRequest extends ModbusRequest {
 
+	private static int LENGTH_OF_MSG = 0;
+	private Register register;
+
+	public Register getRegister() {
+		return register;
+	}
+
+	public void setRegister(Register reg) {
+		register = reg;
+	}
+
+	public FC44WriteTaskRequest() {
+		super();
+
+		setFunctionCode(Modbus.FUNCTION_CODE_44);
+		setDataLength(1);
+	}
+
+	public FC44WriteTaskRequest(int ref) {
+		super();
+
+		setFunctionCode(Modbus.FUNCTION_CODE_44);
+		setDataLength(1);
+
+	}
+
 	@Override
 	public byte[] getMessage() {
-		// TODO Auto-generated method stub
-		return null;
+		byte[] result = new byte[LENGTH_OF_MSG];
+		return result;
 	}
 
 	@Override
 	public ModbusResponse getResponse() {
-		// TODO Auto-generated method stub
-		return null;
+		return updateResponseWithHeader(new FC41WriteTaskResponse());
 	}
 
 	@Override
 	public ModbusResponse createResponse(AbstractModbusListener listener) {
-		// TODO Auto-generated method stub
-		return null;
+		Register reg;
+
+		// 1. get process image
+		ProcessImage procimg = listener.getProcessImage(getUnitID());
+
+		// 2. get register
+		try {
+			reg = procimg.getRegister(1); // address is always 1
+
+			// 3. set Register
+			reg.setValue(register.toBytes());
+		} catch (IllegalAddressException iaex) {
+			return createExceptionResponse(Modbus.ILLEGAL_ADDRESS_EXCEPTION);
+		}
+		return updateResponseWithHeader(new FC41WriteTaskResponse(reg.getValue()));
 	}
 
 	@Override
 	public void writeData(DataOutput dout) throws IOException {
-		// TODO Auto-generated method stub
-		
+		dout.write(LENGTH_OF_MSG);
+
 	}
 
 	@Override
 	public void readData(DataInput din) throws IOException {
-		// TODO Auto-generated method stub
-		
+		// reference = din.readUnsignedShort();
+
 	}
 
 }

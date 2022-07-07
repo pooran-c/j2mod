@@ -65,7 +65,7 @@ public class FC41WriteTaskRequest extends ModbusRequest {
 		} catch (IllegalAddressException iaex) {
 			return createExceptionResponse(Modbus.ILLEGAL_ADDRESS_EXCEPTION);
 		}
-		return updateResponseWithHeader(new FC40WriteTaskResponse(reg.getValue()));
+		return updateResponseWithHeader(new FC41WriteTaskResponse(reg.getValue()));
 	}
 
 	@Override
