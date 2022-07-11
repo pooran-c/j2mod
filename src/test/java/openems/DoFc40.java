@@ -66,7 +66,6 @@ public class DoFc40 {
 
 	public static byte[] hexStringToByteArray(int a) {
 		String s = Integer.toHexString(a);
-		byte[] data = new byte[4];
 
 		StringBuilder sb = new StringBuilder();
 		while (sb.length() < 8 - s.length()) {
@@ -74,6 +73,7 @@ public class DoFc40 {
 		}
 		sb.append(s);
 
+		byte[] data = new byte[sb.length() / 2];
 		for (int i = 0; i < sb.length() / 2; i++) {
 			data[i] = (byte) (0xFF & (Integer.parseInt(sb.substring(2 * i, 2 * i + 2), 16)));
 		}
