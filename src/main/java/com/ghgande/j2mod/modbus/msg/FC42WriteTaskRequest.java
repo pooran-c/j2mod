@@ -63,15 +63,12 @@ public class FC42WriteTaskRequest extends ModbusRequest {
 
 		setFunctionCode(Modbus.FUNCTION_CODE_42);
 		setMsgLength(LENGTH_OF_MSG);
-
 		setDataLength(131);
 	}
 
 	public FC42WriteTaskRequest(Register[] reg, int framenum) {
 		super();
-
 		setFunctionCode(Modbus.FUNCTION_CODE_42);
-
 		setMsgLength(LENGTH_OF_MSG);
 		setFrameNumber(framenum);
 		setRegister(reg);
@@ -110,7 +107,7 @@ public class FC42WriteTaskRequest extends ModbusRequest {
 		dout.write(getMsgLength());
 		dout.write(getFrameNumber());
 		for (Register r : register) {
-			dout.write(r.toBytes());
+			dout.write(r.getValue());
 		}
 
 	}

@@ -19,8 +19,7 @@ public class DoFc42 {
 	private final static int SIZEOFPAYLOAD = 128;
 
 	public static class Codes {
-
-		public static final int CODE_43 = 66;
+		public static final int CODE_42 = 66;
 
 	}
 

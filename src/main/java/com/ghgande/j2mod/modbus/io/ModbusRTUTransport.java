@@ -15,6 +15,11 @@
  */
 package com.ghgande.j2mod.modbus.io;
 
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ghgande.j2mod.modbus.Modbus;
 import com.ghgande.j2mod.modbus.ModbusIOException;
 import com.ghgande.j2mod.modbus.msg.ModbusMessage;
@@ -22,10 +27,6 @@ import com.ghgande.j2mod.modbus.msg.ModbusRequest;
 import com.ghgande.j2mod.modbus.msg.ModbusResponse;
 import com.ghgande.j2mod.modbus.net.AbstractModbusListener;
 import com.ghgande.j2mod.modbus.util.ModbusUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 /**
  * Class that implements the ModbusRTU transport flavor.
@@ -240,17 +241,14 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
 //					readRequestData(0, out);
 //					break;
 
-				case Modbus.FUNCTION_CODE_42:
 				case Modbus.FUNCTION_CODE_40:
-					readRequestData(2, out);
-					break;
 				case Modbus.FUNCTION_CODE_41:
+				case Modbus.FUNCTION_CODE_42:
+				case Modbus.FUNCTION_CODE_43:
 					readRequestData(2, out);
 					break;
-				case Modbus.FUNCTION_CODE_43:
 				case Modbus.FUNCTION_CODE_44:
 					break;
-
 				default:
 					throw new IOException(String.format("getResponse unrecognised function code [%s]", function));
 
@@ -282,7 +280,7 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
 				// write message to byte out
 				byteOutputStream.reset();
 				msg.setHeadless();
-				
+
 				msg.writeTo(byteOutputStream);
 				len = byteOutputStream.size();
 				int[] crc = ModbusUtil.calculateCRC(byteOutputStream.getBuffer(), 0, len);
@@ -453,7 +451,7 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
 						int fc = readByte();
 						byteInputOutputStream.reset();
 						byteInputOutputStream.writeByte(uid);
-						
+
 						byteInputOutputStream.writeByte(fc);
 						// create response to acquire length of message
 						response = ModbusResponse.createModbusResponse(fc);
