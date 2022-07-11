@@ -3,18 +3,16 @@ package openems;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 import com.ghgande.j2mod.modbus.ModbusException;
 import com.ghgande.j2mod.modbus.io.ModbusRTUTransport;
 import com.ghgande.j2mod.modbus.io.ModbusTransaction;
 import com.ghgande.j2mod.modbus.msg.FC40WriteTaskRequest;
 import com.ghgande.j2mod.modbus.msg.FC40WriteTaskResponse;
-import com.ghgande.j2mod.modbus.msg.FC42WriteTaskRequest;
 import com.ghgande.j2mod.modbus.msg.ModbusRequest;
 import com.ghgande.j2mod.modbus.net.AbstractSerialConnection;
 import com.ghgande.j2mod.modbus.net.SerialConnection;
-import com.ghgande.j2mod.modbus.procimg.AdditionalRegister;
+import com.ghgande.j2mod.modbus.procimg.SimpleRegister;
 import com.ghgande.j2mod.modbus.util.SerialParameters;
 
 public class DoFc40 {
@@ -90,7 +88,7 @@ public class DoFc40 {
 		byte[] sizeOfTheUpdateFileToByte = hexStringToByteArray(sizeOfTheUpdateFile);
 
 		// Set the data to be written into register
-		fc40WriteTaskRequest.setRegister(new AdditionalRegister(sizeOfTheUpdateFileToByte));
+		fc40WriteTaskRequest.setRegister(new SimpleRegister(sizeOfTheUpdateFileToByte));
 
 		// Set the Unit id
 		fc40WriteTaskRequest.setUnitID(UNITID);

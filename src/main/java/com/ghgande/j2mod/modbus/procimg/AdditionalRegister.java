@@ -36,7 +36,7 @@ public class AdditionalRegister extends SynchronizedAbstractRegister implements 
 	 */
 	public AdditionalRegister(byte[] bytes) {
 		for (int i = 0; i < bytes.length; i++) {
-			register.add(i,bytes[i]);
+			register.add(i, bytes[i]);
 		}
 		setValue(bytes);
 	}
