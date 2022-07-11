@@ -35,8 +35,8 @@ public class SimpleRegister extends SynchronizedAbstractRegister implements
      * @param b2 the second (low) byte of the word.
      */
     public SimpleRegister(byte b1, byte b2) {
-        register[0] = b1;
-        register[1] = b2;
+        register.set(0, b1) ;
+        register.set(1, b2) ;
     }
 
     /**

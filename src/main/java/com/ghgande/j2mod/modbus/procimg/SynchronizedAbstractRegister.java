@@ -15,6 +15,9 @@
  */
 package com.ghgande.j2mod.modbus.procimg;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Abstract class with synchronized register operations.
  *
@@ -24,77 +27,76 @@ package com.ghgande.j2mod.modbus.procimg;
  */
 public abstract class SynchronizedAbstractRegister implements Register {
 
-    /**
-     * The word (<tt>byte[2]</tt>) holding the state of this register.
-     *
-     * Note that a superclass may set register to null to create a
-     * gap in a Modbus map.
-     */
-    protected byte[] register = new byte[2];
+	/**
+	 * The word (<tt>byte[2]</tt>) holding the state of this register.
+	 *
+	 * Note that a superclass may set register to null to create a gap in a Modbus
+	 * map.
+	 */
+	protected List<Byte> register = new ArrayList<Byte>();
 
-    @Override
-    public synchronized int getValue() {
-        if (register == null) {
-            throw new IllegalAddressException();
-        }
+	@Override
+	public synchronized int getValue() {
+		if (register == null) {
+			throw new IllegalAddressException();
+		}
+		int result = 0;
+		for (int i = 0; i < register.size(); i++) {
+			result = result | ((register.get(i) & 0xff) << 8 * i);
+		}
+		return result;
+	}
 
-        return ((register[0] & 0xff) << 8 | (register[1] & 0xff));
-    }
+	@Override
+	public int toUnsignedShort() {
+		return getValue();
+	}
 
-    @Override
-    public int toUnsignedShort() {
-        return getValue();
-    }
+	@Override
+	public short toShort() {
+		if (register == null) {
+			throw new IllegalAddressException();
+		}
+		return (short) ((register.get(0) << 8) | (register.get(1) & 0xff));
+	}
 
-    @Override
-    public short toShort() {
-        if (register == null) {
-            throw new IllegalAddressException();
-        }
+	@Override
+	public synchronized byte[] toBytes() {
+		byte[] dest = new byte[register.size()];
 
-        return (short)((register[0] << 8) | (register[1] & 0xff));
-    }
+		for (int i = 0; i < register.size(); i++) {
+			dest[i] = register.get(i);
+		}
+		return dest;
+	}
 
-    @Override
-    public synchronized byte[] toBytes() {
-        byte[] dest = new byte[register.length];
-        System.arraycopy(register, 0, dest, 0, dest.length);
-        return dest;
-    }
+	@Override
+	public synchronized void setValue(short s) {
+		if (register == null) {
+			throw new IllegalAddressException();
+		}
 
-    @Override
-    public synchronized void setValue(short s) {
-        if (register == null) {
-            throw new IllegalAddressException();
-        }
+		register.set(0, (byte) (0xff & (s >> 8)));
+		register.set(1, (byte) (0xff & s));
+	}
 
-        register[0] = (byte)(0xff & (s >> 8));
-        register[1] = (byte)(0xff & s);
-    }
+	@Override
+	public synchronized void setValue(byte[] bytes) {
+		if (register == null) {
+			throw new IllegalAddressException();
+		}
+		for (int i = 0; i < register.size(); i++) {
+			register.set(i, bytes[i]);
+		}
+	}
 
-    @Override
-    public synchronized void setValue(byte[] bytes) {
-        if (bytes.length < 2) {
-            throw new IllegalArgumentException();
-        }
-        else {
-            if (register == null) {
-                throw new IllegalAddressException();
-            }
-
-            register[0] = bytes[0];
-            register[1] = bytes[1];
-        }
-    }
-
-    @Override
-    public synchronized void setValue(int v) {
-        if (register == null) {
-            throw new IllegalAddressException();
-        }
-
-        register[0] = (byte)(0xff & (v >> 8));
-        register[1] = (byte)(0xff & v);
-    }
-
+	@Override
+	public synchronized void setValue(int v) {
+		if (register == null) {
+			throw new IllegalAddressException();
+		}
+		for (int i = register.size() - 1; i >= 0; i--) {
+			register.set(i, (byte) (0xff & (v >> 8 * i)));
+		}
+	}
 }

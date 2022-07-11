@@ -13,7 +13,6 @@ import com.ghgande.j2mod.modbus.msg.ModbusRequest;
 import com.ghgande.j2mod.modbus.net.AbstractSerialConnection;
 import com.ghgande.j2mod.modbus.net.SerialConnection;
 import com.ghgande.j2mod.modbus.procimg.AdditionalRegister;
-import com.ghgande.j2mod.modbus.procimg.AdditionalRegister2;
 import com.ghgande.j2mod.modbus.util.SerialParameters;
 
 public class DoFc42 {
@@ -77,10 +76,10 @@ public class DoFc42 {
 		int counter = 1;
 		for (byte[] b : newArray) {
 
-			AdditionalRegister2[] reg2 = new AdditionalRegister2[b.length];
+			AdditionalRegister[] reg2 = new AdditionalRegister[b.length];
 
 			for (int i = 0; i < b.length; i++) {
-				reg2[i] = new AdditionalRegister2(b[i]);
+				reg2[i] = new AdditionalRegister(b[i]);
 
 			}
 

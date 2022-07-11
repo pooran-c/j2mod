@@ -1,12 +1,16 @@
 package openems;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
 
 import com.ghgande.j2mod.modbus.ModbusException;
 import com.ghgande.j2mod.modbus.io.ModbusRTUTransport;
 import com.ghgande.j2mod.modbus.io.ModbusTransaction;
 import com.ghgande.j2mod.modbus.msg.FC40WriteTaskRequest;
 import com.ghgande.j2mod.modbus.msg.FC40WriteTaskResponse;
+import com.ghgande.j2mod.modbus.msg.FC42WriteTaskRequest;
 import com.ghgande.j2mod.modbus.msg.ModbusRequest;
 import com.ghgande.j2mod.modbus.net.AbstractSerialConnection;
 import com.ghgande.j2mod.modbus.net.SerialConnection;
@@ -24,11 +28,12 @@ public class DoFc40 {
 
 	}
 
-	public static String PORTNAME = "COM3";
+	public static String PORTNAME = "COM5";
 	public static int REFERENCE = 1;
-	public static int DATA = 572042494; // 254
+//	public static int DATA = 572042494; // 254
 	public static int UNITID = 1;
 	public static int BAUDRATE = 19200;
+	public static String PATH = "C:\\ATLUPDATE\\feneconR0.0.bin";
 
 	public static void main(String args[]) {
 
@@ -50,9 +55,14 @@ public class DoFc40 {
 			e.printStackTrace();
 		}
 		transport.setEcho(false);
-		transport.setTimeout(500);
-
-		getFc40ResponseRTU(transport, DATA);
+		transport.setTimeout(50);
+		byte[] allBytes = null;
+		try {
+			allBytes = Files.readAllBytes(Paths.get(PATH));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		getFc40ResponseRTU(transport, allBytes.length);
 
 	}
 

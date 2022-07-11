@@ -26,7 +26,7 @@ package com.ghgande.j2mod.modbus.procimg;
  * @author Steve O'Hara (4NG)
  * @version 2.0 (March 2016)
  */
-public class AdditionalRegister extends SynchronizedAbstractAdditionalRegister implements Register {
+public class AdditionalRegister extends SynchronizedAbstractRegister implements Register {
 
 	/**
 	 * Constructs a new <tt>SimpleRegister</tt> instance.
@@ -36,7 +36,7 @@ public class AdditionalRegister extends SynchronizedAbstractAdditionalRegister i
 	 */
 	public AdditionalRegister(byte[] bytes) {
 		for (int i = 0; i < bytes.length; i++) {
-			register[i] = bytes[i];
+			register.add(i,bytes[i]);
 		}
 		setValue(bytes);
 	}
