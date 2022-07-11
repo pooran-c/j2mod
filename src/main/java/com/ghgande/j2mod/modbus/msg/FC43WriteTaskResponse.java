@@ -32,14 +32,14 @@ public class FC43WriteTaskResponse extends ModbusResponse {
 		super();
 		setMsgLength(LENGTH_OF_MSG);
 		setDataLength(2);
-		setFunctionCode(Modbus.FUNCTION_CODE_41);
+		setFunctionCode(Modbus.FUNCTION_CODE_43);
 	}
 
 	public FC43WriteTaskResponse() {
 		super();
 		setMsgLength(LENGTH_OF_MSG);
 		setDataLength(2);
-		setFunctionCode(Modbus.FUNCTION_CODE_41);
+		setFunctionCode(Modbus.FUNCTION_CODE_43);
 	}
 
 	@Override
@@ -62,5 +62,4 @@ public class FC43WriteTaskResponse extends ModbusResponse {
 
 		return result;
 	}
-
 }
