@@ -1,6 +1,8 @@
 package openems;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import com.ghgande.j2mod.modbus.ModbusException;
 import com.ghgande.j2mod.modbus.io.ModbusRTUTransport;
@@ -10,7 +12,7 @@ import com.ghgande.j2mod.modbus.msg.FC40WriteTaskResponse;
 import com.ghgande.j2mod.modbus.msg.ModbusRequest;
 import com.ghgande.j2mod.modbus.net.AbstractSerialConnection;
 import com.ghgande.j2mod.modbus.net.SerialConnection;
-import com.ghgande.j2mod.modbus.procimg.AdditionalRegister;
+import com.ghgande.j2mod.modbus.procimg.SimpleRegister;
 import com.ghgande.j2mod.modbus.util.SerialParameters;
 
 public class DoFc40 {
@@ -24,11 +26,12 @@ public class DoFc40 {
 
 	}
 
-	public static String PORTNAME = "COM3";
+	public static String PORTNAME = "COM5";
 	public static int REFERENCE = 1;
-	public static int DATA = 572042494; // 254
+//	public static int DATA = 572042494; // 254
 	public static int UNITID = 1;
 	public static int BAUDRATE = 19200;
+	public static String PATH = "C:\\ATLUPDATE\\feneconR0.0.bin";
 
 	public static void main(String args[]) {
 
@@ -50,15 +53,19 @@ public class DoFc40 {
 			e.printStackTrace();
 		}
 		transport.setEcho(false);
-		transport.setTimeout(500);
-
-		getFc40ResponseRTU(transport, DATA);
+		transport.setTimeout(50);
+		byte[] allBytes = null;
+		try {
+			allBytes = Files.readAllBytes(Paths.get(PATH));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		getFc40ResponseRTU(transport, allBytes.length);
 
 	}
 
 	public static byte[] hexStringToByteArray(int a) {
 		String s = Integer.toHexString(a);
-		byte[] data = new byte[4];
 
 		StringBuilder sb = new StringBuilder();
 		while (sb.length() < 8 - s.length()) {
@@ -66,6 +73,7 @@ public class DoFc40 {
 		}
 		sb.append(s);
 
+		byte[] data = new byte[sb.length() / 2];
 		for (int i = 0; i < sb.length() / 2; i++) {
 			data[i] = (byte) (0xFF & (Integer.parseInt(sb.substring(2 * i, 2 * i + 2), 16)));
 		}
@@ -80,7 +88,7 @@ public class DoFc40 {
 		byte[] sizeOfTheUpdateFileToByte = hexStringToByteArray(sizeOfTheUpdateFile);
 
 		// Set the data to be written into register
-		fc40WriteTaskRequest.setRegister(new AdditionalRegister(sizeOfTheUpdateFileToByte));
+		fc40WriteTaskRequest.setRegister(new SimpleRegister(sizeOfTheUpdateFileToByte));
 
 		// Set the Unit id
 		fc40WriteTaskRequest.setUnitID(UNITID);

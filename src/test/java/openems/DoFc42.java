@@ -12,15 +12,14 @@ import com.ghgande.j2mod.modbus.msg.FC42WriteTaskRequest;
 import com.ghgande.j2mod.modbus.msg.ModbusRequest;
 import com.ghgande.j2mod.modbus.net.AbstractSerialConnection;
 import com.ghgande.j2mod.modbus.net.SerialConnection;
-import com.ghgande.j2mod.modbus.procimg.AdditionalRegister2;
+import com.ghgande.j2mod.modbus.procimg.SimpleRegister;
 import com.ghgande.j2mod.modbus.util.SerialParameters;
 
 public class DoFc42 {
 	private final static int SIZEOFPAYLOAD = 128;
 
 	public static class Codes {
-
-		public static final int CODE_43 = 66;
+		public static final int CODE_42 = 66;
 
 	}
 
@@ -56,7 +55,7 @@ public class DoFc42 {
 			e.printStackTrace();
 		}
 		transport.setEcho(false);
-		transport.setTimeout(500);
+//		transport.setTimeout(50);
 
 		if (getFc42ResponseRTU(transport, allBytes)) {
 			System.out.println(" Success in fc 42 ");
@@ -76,10 +75,10 @@ public class DoFc42 {
 		int counter = 1;
 		for (byte[] b : newArray) {
 
-			AdditionalRegister2[] reg2 = new AdditionalRegister2[b.length];
+			SimpleRegister[] reg2 = new SimpleRegister[b.length];
 
 			for (int i = 0; i < b.length; i++) {
-				reg2[i] = new AdditionalRegister2(b[i]);
+				reg2[i] = new SimpleRegister(b[i]);
 
 			}
 

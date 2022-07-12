@@ -15,7 +15,7 @@ public class FC40WriteTaskRequest extends ModbusRequest {
 
 	private static int LENGTH_OF_MSG = 4;
 	private static int ADDRESS = 1;
-	
+
 	private int msgLength;
 	private Register register;
 

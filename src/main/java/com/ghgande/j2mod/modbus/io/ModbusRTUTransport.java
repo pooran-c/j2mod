@@ -15,6 +15,11 @@
  */
 package com.ghgande.j2mod.modbus.io;
 
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ghgande.j2mod.modbus.Modbus;
 import com.ghgande.j2mod.modbus.ModbusIOException;
 import com.ghgande.j2mod.modbus.msg.ModbusMessage;
@@ -22,10 +27,6 @@ import com.ghgande.j2mod.modbus.msg.ModbusRequest;
 import com.ghgande.j2mod.modbus.msg.ModbusResponse;
 import com.ghgande.j2mod.modbus.net.AbstractModbusListener;
 import com.ghgande.j2mod.modbus.util.ModbusUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 /**
  * Class that implements the ModbusRTU transport flavor.
@@ -137,25 +138,8 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
 					readRequestData(byteCount, out);
 					break;
 				case Modbus.FUNCTION_CODE_42:
-					readBytes(inpBuf, 4);
-					out.write(inpBuf, 0, 4);
-					byteCount = readByte();
-					out.write(byteCount);
-					readRequestData(byteCount, out);
-					break;
 				case Modbus.FUNCTION_CODE_43:
-					readBytes(inpBuf, 4);
-					out.write(inpBuf, 0, 4);
-					byteCount = readByte();
-					out.write(byteCount);
-					readRequestData(byteCount, out);
-					break;
 				case Modbus.FUNCTION_CODE_44:
-					readBytes(inpBuf, 4);
-					out.write(inpBuf, 0, 4);
-					byteCount = readByte();
-					out.write(byteCount);
-					readRequestData(byteCount, out);
 					break;
 
 				default:
@@ -257,20 +241,14 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
 //					readRequestData(0, out);
 //					break;
 
-				case Modbus.FUNCTION_CODE_42:
 				case Modbus.FUNCTION_CODE_40:
-					readRequestData(2, out);
-					break;
 				case Modbus.FUNCTION_CODE_41:
-					readRequestData(2, out);
-					break;
+				case Modbus.FUNCTION_CODE_42:
 				case Modbus.FUNCTION_CODE_43:
 					readRequestData(2, out);
 					break;
 				case Modbus.FUNCTION_CODE_44:
-					readRequestData(2, out);
 					break;
-
 				default:
 					throw new IOException(String.format("getResponse unrecognised function code [%s]", function));
 

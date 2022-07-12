@@ -17,7 +17,7 @@ public class FC42WriteTaskRequest extends ModbusRequest {
 
 	private int msgLength;
 	private Register[] register;
-	private int frameNumber;
+	private byte[] frameNumber = new byte[2];
 
 	public Register getResRegister() {
 		return resRegister;
@@ -29,12 +29,17 @@ public class FC42WriteTaskRequest extends ModbusRequest {
 
 	private Register resRegister;
 
-	public int getFrameNumber() {
+	public byte[] getFrameNumber() {
 		return frameNumber;
 	}
 
-	public void setFrameNumber(int frameNumber) {
-		this.frameNumber = frameNumber;
+	public void setFrameNumber(int frameNum) {
+		byte[] frameByte = new byte[2];
+		frameByte[0] = (byte) (0xff & (frameNum << 8));
+		frameByte[1] = (byte) (0xff & frameNum);
+		for (int i = 0; i < frameByte.length; i++) {
+			this.frameNumber[i] = frameByte[i];
+		}
 	}
 
 	public int getMsgLength() {
@@ -58,15 +63,12 @@ public class FC42WriteTaskRequest extends ModbusRequest {
 
 		setFunctionCode(Modbus.FUNCTION_CODE_42);
 		setMsgLength(LENGTH_OF_MSG);
-
 		setDataLength(131);
 	}
 
 	public FC42WriteTaskRequest(Register[] reg, int framenum) {
 		super();
-
 		setFunctionCode(Modbus.FUNCTION_CODE_42);
-
 		setMsgLength(LENGTH_OF_MSG);
 		setFrameNumber(framenum);
 		setRegister(reg);
@@ -105,7 +107,7 @@ public class FC42WriteTaskRequest extends ModbusRequest {
 		dout.write(getMsgLength());
 		dout.write(getFrameNumber());
 		for (Register r : register) {
-			dout.write(r.toBytes());
+			dout.write(r.getValue());
 		}
 
 	}
