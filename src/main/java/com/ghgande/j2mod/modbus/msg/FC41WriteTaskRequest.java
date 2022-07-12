@@ -9,6 +9,7 @@ import com.ghgande.j2mod.modbus.net.AbstractModbusListener;
 import com.ghgande.j2mod.modbus.procimg.IllegalAddressException;
 import com.ghgande.j2mod.modbus.procimg.ProcessImage;
 import com.ghgande.j2mod.modbus.procimg.Register;
+import com.ghgande.j2mod.modbus.procimg.SimpleRegister;
 
 public class FC41WriteTaskRequest extends ModbusRequest {
 
@@ -76,7 +77,7 @@ public class FC41WriteTaskRequest extends ModbusRequest {
 
 	@Override
 	public void readData(DataInput din) throws IOException {
-		// reference = din.readUnsignedShort();
+		register = new SimpleRegister(din.readByte(), din.readByte());
 
 	}
 

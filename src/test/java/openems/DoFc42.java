@@ -12,7 +12,6 @@ import com.ghgande.j2mod.modbus.msg.FC42WriteTaskRequest;
 import com.ghgande.j2mod.modbus.msg.ModbusRequest;
 import com.ghgande.j2mod.modbus.net.AbstractSerialConnection;
 import com.ghgande.j2mod.modbus.net.SerialConnection;
-import com.ghgande.j2mod.modbus.procimg.AdditionalRegister;
 import com.ghgande.j2mod.modbus.procimg.AdditionalRegister2;
 import com.ghgande.j2mod.modbus.util.SerialParameters;
 

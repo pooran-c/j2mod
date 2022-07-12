@@ -137,8 +137,25 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
 					readRequestData(byteCount, out);
 					break;
 				case Modbus.FUNCTION_CODE_42:
+					readBytes(inpBuf, 4);
+					out.write(inpBuf, 0, 4);
+					byteCount = readByte();
+					out.write(byteCount);
+					readRequestData(byteCount, out);
+					break;
 				case Modbus.FUNCTION_CODE_43:
+					readBytes(inpBuf, 4);
+					out.write(inpBuf, 0, 4);
+					byteCount = readByte();
+					out.write(byteCount);
+					readRequestData(byteCount, out);
+					break;
 				case Modbus.FUNCTION_CODE_44:
+					readBytes(inpBuf, 4);
+					out.write(inpBuf, 0, 4);
+					byteCount = readByte();
+					out.write(byteCount);
+					readRequestData(byteCount, out);
 					break;
 
 				default:
@@ -248,7 +265,10 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
 					readRequestData(2, out);
 					break;
 				case Modbus.FUNCTION_CODE_43:
+					readRequestData(2, out);
+					break;
 				case Modbus.FUNCTION_CODE_44:
+					readRequestData(2, out);
 					break;
 
 				default:
@@ -282,7 +302,7 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
 				// write message to byte out
 				byteOutputStream.reset();
 				msg.setHeadless();
-				
+
 				msg.writeTo(byteOutputStream);
 				len = byteOutputStream.size();
 				int[] crc = ModbusUtil.calculateCRC(byteOutputStream.getBuffer(), 0, len);
@@ -453,7 +473,7 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
 						int fc = readByte();
 						byteInputOutputStream.reset();
 						byteInputOutputStream.writeByte(uid);
-						
+
 						byteInputOutputStream.writeByte(fc);
 						// create response to acquire length of message
 						response = ModbusResponse.createModbusResponse(fc);
