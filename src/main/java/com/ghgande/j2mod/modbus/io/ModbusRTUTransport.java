@@ -124,13 +124,9 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
 					break;
 
 				case Modbus.FUNCTION_CODE_40:
-					readBytes(inpBuf, 4);
-					out.write(inpBuf, 0, 4);
-					byteCount = readByte();
-					out.write(byteCount);
-					readRequestData(byteCount, out);
-					break;
 				case Modbus.FUNCTION_CODE_41:
+				case Modbus.FUNCTION_CODE_43:
+				case Modbus.FUNCTION_CODE_44:
 					readBytes(inpBuf, 4);
 					out.write(inpBuf, 0, 4);
 					byteCount = readByte();
@@ -138,8 +134,11 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
 					readRequestData(byteCount, out);
 					break;
 				case Modbus.FUNCTION_CODE_42:
-				case Modbus.FUNCTION_CODE_43:
-				case Modbus.FUNCTION_CODE_44:
+					readBytes(inpBuf, 4);
+					out.write(inpBuf, 0, 4);
+					byteCount = readByte();
+					out.write(byteCount);
+					readRequestData(byteCount, out);
 					break;
 
 				default:
@@ -248,6 +247,7 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
 					readRequestData(2, out);
 					break;
 				case Modbus.FUNCTION_CODE_44:
+					readRequestData(2, out);
 					break;
 				default:
 					throw new IOException(String.format("getResponse unrecognised function code [%s]", function));

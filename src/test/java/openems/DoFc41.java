@@ -62,7 +62,7 @@ public class DoFc41 {
 
 		FC41WriteTaskRequest fc41WriteTaskRequest = new FC41WriteTaskRequest();
 
-		//fc41WriteTaskRequest.setReference(REFERENCE);
+		// fc41WriteTaskRequest.setReference(REFERENCE);
 		fc41WriteTaskRequest.setUnitID(UNITID);
 
 		ModbusRequest req = fc41WriteTaskRequest;
@@ -76,8 +76,8 @@ public class DoFc41 {
 		} catch (ModbusException e) {
 			e.printStackTrace();
 		}
-		FC41WriteTaskResponse fC40WriteTaskResponse = (FC41WriteTaskResponse) trans.getResponse();
-		return fC40WriteTaskResponse;
+		FC41WriteTaskResponse fC41WriteTaskResponse = (FC41WriteTaskResponse) trans.getResponse();
+		return fC41WriteTaskResponse;
 	}
 
 }

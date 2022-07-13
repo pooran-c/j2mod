@@ -270,13 +270,13 @@ public interface Modbus {
 	 * Defines the default setting for I/O operation timeouts in milliseconds
 	 * (=<tt>3000</tt>).
 	 */
-	int DEFAULT_TIMEOUT = 50;
+	int DEFAULT_TIMEOUT = 3000;
 
 	/**
 	 * Defines the sleep period between transaction retries in milliseconds
 	 * (=<tt>200</tt>).
 	 */
-	int RETRY_SLEEP_TIME = 50;
+	int RETRY_SLEEP_TIME = 300;
 
 	/**
 	 * Defines the default reconnecting setting for transactions (=<tt>false</tt>).

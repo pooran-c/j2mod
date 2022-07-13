@@ -9,15 +9,23 @@ import com.ghgande.j2mod.modbus.net.AbstractModbusListener;
 import com.ghgande.j2mod.modbus.procimg.IllegalAddressException;
 import com.ghgande.j2mod.modbus.procimg.ProcessImage;
 import com.ghgande.j2mod.modbus.procimg.Register;
+import com.ghgande.j2mod.modbus.procimg.SimpleRegister;
 
 public class FC42WriteTaskRequest extends ModbusRequest {
 
 	private static int LENGTH_OF_MSG = 128;
 	private static int ADDRESS = 1;
-
+	private Register register;
 	private int msgLength;
-	private Register[] register;
 	private byte[] frameNumber = new byte[2];
+	
+	public Register getRegister() {
+		return register;
+	}
+	
+	public void setRegister (Register register) {
+		this.register = register;
+	}
 
 	public Register getResRegister() {
 		return resRegister;
@@ -50,14 +58,6 @@ public class FC42WriteTaskRequest extends ModbusRequest {
 		this.msgLength = msgLength;
 	}
 
-	public Register[] getRegister() {
-		return register;
-	}
-
-	public void setRegister(Register[] reg) {
-		register = reg;
-	}
-
 	public FC42WriteTaskRequest() {
 		super();
 
@@ -66,14 +66,13 @@ public class FC42WriteTaskRequest extends ModbusRequest {
 		setDataLength(131);
 	}
 
-	public FC42WriteTaskRequest(Register[] reg, int framenum) {
+	public FC42WriteTaskRequest( int framenum) {
 		super();
 		setFunctionCode(Modbus.FUNCTION_CODE_42);
 		setMsgLength(LENGTH_OF_MSG);
 		setFrameNumber(framenum);
-		setRegister(reg);
 		setDataLength(131);
-
+	
 	}
 
 	@Override
@@ -106,9 +105,9 @@ public class FC42WriteTaskRequest extends ModbusRequest {
 
 		dout.write(getMsgLength());
 		dout.write(getFrameNumber());
-		for (Register r : register) {
-			dout.write(r.getValue());
-		}
+		//for (Register r : register) {
+			dout.write(register.toBytes());
+		//}
 
 	}
 
@@ -119,19 +118,23 @@ public class FC42WriteTaskRequest extends ModbusRequest {
 
 	@Override
 	public byte[] getMessage() {
-		byte[] result = new byte[register.length];
-
-		for (int i = 0; i < register.length - 1; i++) {
-
-			result[i] = (byte) (register[i].getValue());
-
-		}
-
-//		result[0] = (byte) (register[0].getValue());
-//		result[1] = (byte) (register[0].getValue() >> 8);
-////		result[2] = (byte) (register[0].getValue() >> 16);
-////		result[3] = (byte) (register[0].getValue() >> 24);
-
-		return result;
+		
+		
+		
+		return register.toBytes();
+//		byte[] result = new byte[2];
+//		
+////		for (int i = 0; i < register.) {
+////			
+////		}
+//
+//		result[0] = (byte) (register.getValue());
+//		result[1] = (byte) (register.getValue() >> 8);
+//		//result[2] = (byte) (register.getValue() >> 16);
+//		//result[3] = (byte) (register.getValue() >> 24);
+//
+//		return result;
 	}
+
+
 }

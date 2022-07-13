@@ -23,7 +23,7 @@ public class DoFc42 {
 
 	}
 
-	public static String PORTNAME = "COM3";
+	public static String PORTNAME = "COM4";
 	public static int REFERENCE = 1;
 	public static int UNITID = 1;
 	public static int BAUDRATE = 19200;
@@ -75,14 +75,9 @@ public class DoFc42 {
 		int counter = 1;
 		for (byte[] b : newArray) {
 
-			SimpleRegister[] reg2 = new SimpleRegister[b.length];
+			FC42WriteTaskRequest fc42WriteTaskRequest = new FC42WriteTaskRequest(counter);
+			fc42WriteTaskRequest.setRegister(new SimpleRegister(b));
 
-			for (int i = 0; i < b.length; i++) {
-				reg2[i] = new SimpleRegister(b[i]);
-
-			}
-
-			FC42WriteTaskRequest fc42WriteTaskRequest = new FC42WriteTaskRequest(reg2, counter);
 			counter++;
 			req = fc42WriteTaskRequest;
 
