@@ -127,23 +127,25 @@ public class ModbusSerialTransaction extends ModbusTransaction {
 				synchronized (this) {
 
 					byte[] reqResult = request.getMessage();
-					System.out.println();
-					System.out.println("Modbus Request Message");
-					for (byte b : reqResult) {
-						System.out.print(b + " | ");
-					}
+//					System.out.println();
+//					System.out.println("Modbus Request Message");
+//					for (byte b : reqResult) {
+//						System.out.print(b + " | ");
+//					}
+//					System.out.println();
 
 					// write request message
 					transport.writeRequest(request);
 					// read response message
 					response = transport.readResponse();
 
-					byte[] reqResponse = response.getMessage();
-					System.out.println();
-					System.out.println("Modbus response message");
-					for (byte b : reqResponse) {
-						System.out.print(b + " | ");
-					}
+//					byte[] reqResponse = response.getMessage();
+//					System.out.println();
+//					System.out.println("Modbus response message");
+//					for (byte b : reqResponse) {
+//						System.out.print(b + " | ");
+//					}
+//					System.out.println();
 
 					finished = true;
 				}

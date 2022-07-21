@@ -50,7 +50,8 @@ public class FC43WriteTaskResponse extends ModbusResponse {
 
 	@Override
 	public void readData(DataInput din) throws IOException {
-		setMsgLength(LENGTH_OF_MSG);
+		setMsgLength(din.readByte());
+		setResponseData(din.readByte());
 		setDataLength(4);
 	}
 
@@ -62,4 +63,6 @@ public class FC43WriteTaskResponse extends ModbusResponse {
 
 		return result;
 	}
+	
+
 }

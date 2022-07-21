@@ -247,7 +247,7 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
 					readRequestData(2, out);
 					break;
 				case Modbus.FUNCTION_CODE_44:
-					readRequestData(2, out);
+					readRequestData(3, out);
 					break;
 				default:
 					throw new IOException(String.format("getResponse unrecognised function code [%s]", function));
@@ -286,7 +286,15 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
 				int[] crc = ModbusUtil.calculateCRC(byteOutputStream.getBuffer(), 0, len);
 				byteOutputStream.writeByte(crc[0]);
 				byteOutputStream.writeByte(crc[1]);
-				// write message
+				
+// 				write message
+//				byte[] x = byteOutputStream.getBuffer();
+//				System.out.println("Writing stream");
+//				for (byte b : x) {
+//					System.out.print(b + " |");
+//				}
+//				System.out.println();
+				
 				writeBytes(byteOutputStream.getBuffer(), byteOutputStream.size());
 				if (logger.isDebugEnabled()) {
 					logger.debug("Sent: {}",
@@ -483,6 +491,12 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
 						throw new IOException("Error reading response");
 					}
 
+//					byte[] x = byteInputStream.getBuffer();
+//					System.out.print("Response stream ");
+//					for (byte b : x) {
+//						System.out.print(b + " |");
+//					}
+					
 					// read response
 					byteInputStream.reset(inBuffer, dlength);
 					response.readFrom(byteInputStream);

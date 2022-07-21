@@ -77,7 +77,6 @@ public class FC44WriteTaskRequest extends ModbusRequest {
 	@Override
 	public void readData(DataInput din) throws IOException {
 		// reference = din.readUnsignedShort();
-
 	}
 
 }

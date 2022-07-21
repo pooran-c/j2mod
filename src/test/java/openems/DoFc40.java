@@ -26,11 +26,11 @@ public class DoFc40 {
 
 	}
 
-	public static String PORTNAME = "COM5";
+	public static String PORTNAME = "COM4";
 	public static int REFERENCE = 1;
 //	public static int DATA = 572042494; // 254
 	public static int UNITID = 1;
-	public static int BAUDRATE = 19200;
+	public static int BAUDRATE = 568547;
 	public static String PATH = "C:\\ATLUPDATE\\feneconR0.0.bin";
 
 	public static void main(String args[]) {
@@ -64,11 +64,11 @@ public class DoFc40 {
 
 	}
 
-	public static byte[] hexStringToByteArray(int a) {
+	public static byte[] hexStringToByteArray(int a, int bytelength) {
 		String s = Integer.toHexString(a);
 
 		StringBuilder sb = new StringBuilder();
-		while (sb.length() < 8 - s.length()) {
+		while (sb.length() < bytelength - s.length()) {
 			sb.append('0');
 		}
 		sb.append(s);
@@ -85,13 +85,14 @@ public class DoFc40 {
 
 		FC40WriteTaskRequest fc40WriteTaskRequest = new FC40WriteTaskRequest();
 
-		byte[] sizeOfTheUpdateFileToByte = hexStringToByteArray(sizeOfTheUpdateFile);
+		byte[] sizeOfTheUpdateFileToByte = hexStringToByteArray(sizeOfTheUpdateFile, 8);
 
 		// Set the data to be written into register
 		fc40WriteTaskRequest.setRegister(new SimpleRegister(sizeOfTheUpdateFileToByte));
 
 		// Set the Unit id
 		fc40WriteTaskRequest.setUnitID(UNITID);
+		//System.out.println(fc40WriteTaskRequest.getHexMessage());
 
 		ModbusRequest req = fc40WriteTaskRequest;
 		req.setUnitID(UNITID);

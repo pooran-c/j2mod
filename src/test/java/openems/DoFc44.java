@@ -19,11 +19,11 @@ public class DoFc44 {
 		public static final int CODE_41 = 41;
 		public static final int CODE_40 = 40;
 		public static final int CODE_43 = 43;
-		public static final int CODE_44 = 44;
+		public static final int CODE_44 = 68;
 
 	}
 
-	public static String PORTNAME = "COM4";
+	public static String PORTNAME = "COM3";
 	public static int REFERENCE = 1;
 	public static int DATA = 513227;
 	public static int UNITID = 1;
@@ -50,8 +50,10 @@ public class DoFc44 {
 		}
 		transport.setEcho(false);
 		transport.setTimeout(500);
-
-		if (getFc44ResponseRTU(transport).getFunctionCode() == Codes.CODE_44) {
+		FC44WriteTaskResponse res = getFc44ResponseRTU(transport);
+		if (res.getFunctionCode() == Codes.CODE_44) {
+			System.out.println("Response data " + res.getResponseData());
+			System.out.println("Response status " + res.getResponseStatus());
 			System.out.println(" Success in fc 44 ");
 		} else {
 			System.out.println(" Failure in fc 44 ");
@@ -76,6 +78,8 @@ public class DoFc44 {
 			e.printStackTrace();
 		}
 		FC44WriteTaskResponse fC44WriteTaskResponse = (FC44WriteTaskResponse) trans.getResponse();
+		
+		fC44WriteTaskResponse.getResponseData();
 		return fC44WriteTaskResponse;
 
 	}

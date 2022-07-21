@@ -9,21 +9,20 @@ import com.ghgande.j2mod.modbus.net.AbstractModbusListener;
 import com.ghgande.j2mod.modbus.procimg.IllegalAddressException;
 import com.ghgande.j2mod.modbus.procimg.ProcessImage;
 import com.ghgande.j2mod.modbus.procimg.Register;
-import com.ghgande.j2mod.modbus.procimg.SimpleRegister;
 
 public class FC42WriteTaskRequest extends ModbusRequest {
 
-	private static int LENGTH_OF_MSG = 128;
+	private static int LENGTH_OF_MSG = 130;
 	private static int ADDRESS = 1;
 	private Register register;
 	private int msgLength;
 	private byte[] frameNumber = new byte[2];
-	
+
 	public Register getRegister() {
 		return register;
 	}
-	
-	public void setRegister (Register register) {
+
+	public void setRegister(Register register) {
 		this.register = register;
 	}
 
@@ -41,13 +40,8 @@ public class FC42WriteTaskRequest extends ModbusRequest {
 		return frameNumber;
 	}
 
-	public void setFrameNumber(int frameNum) {
-		byte[] frameByte = new byte[2];
-		frameByte[0] = (byte) (0xff & (frameNum << 8));
-		frameByte[1] = (byte) (0xff & frameNum);
-		for (int i = 0; i < frameByte.length; i++) {
-			this.frameNumber[i] = frameByte[i];
-		}
+	public void setFrameNumber(byte[] frameNum) {
+		this.frameNumber = frameNum;
 	}
 
 	public int getMsgLength() {
@@ -66,13 +60,13 @@ public class FC42WriteTaskRequest extends ModbusRequest {
 		setDataLength(131);
 	}
 
-	public FC42WriteTaskRequest( int framenum) {
+	public FC42WriteTaskRequest(byte[] framenum) {
 		super();
 		setFunctionCode(Modbus.FUNCTION_CODE_42);
 		setMsgLength(LENGTH_OF_MSG);
 		setFrameNumber(framenum);
 		setDataLength(131);
-	
+
 	}
 
 	@Override
@@ -105,9 +99,9 @@ public class FC42WriteTaskRequest extends ModbusRequest {
 
 		dout.write(getMsgLength());
 		dout.write(getFrameNumber());
-		//for (Register r : register) {
-			dout.write(register.toBytes());
-		//}
+		// for (Register r : register) {
+		dout.write(register.toBytes());
+		// }
 
 	}
 
@@ -118,9 +112,7 @@ public class FC42WriteTaskRequest extends ModbusRequest {
 
 	@Override
 	public byte[] getMessage() {
-		
-		
-		
+
 		return register.toBytes();
 //		byte[] result = new byte[2];
 //		
@@ -135,6 +127,5 @@ public class FC42WriteTaskRequest extends ModbusRequest {
 //
 //		return result;
 	}
-
 
 }

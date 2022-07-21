@@ -49,8 +49,8 @@ public class FC40WriteTaskResponse extends ModbusResponse {
 
 	@Override
 	public void readData(DataInput din) throws IOException {
-		setResponseData(din.readUnsignedByte());
-		setMsgLength(LENGTH_OF_MSG);
+		setMsgLength(din.readByte());
+		setResponseData(din.readByte());		
 		setDataLength(4);
 	}
 
@@ -58,9 +58,13 @@ public class FC40WriteTaskResponse extends ModbusResponse {
 	public byte[] getMessage() {
 
 		byte[] result = new byte[2];
-		result[0] = (byte) ((responseData) & 0xff);
-		result[1] = (byte) ((responseData));
+//		result[0] = (byte) ((responseData) & 0xff);
+//		result[1] = (byte) ((responseData));
 
+        result[0] = (byte)((responseData >> 8) & 0xff);
+        result[1] = (byte)(responseData & 0xff);
+		
+		
 		return result;
 	}
 

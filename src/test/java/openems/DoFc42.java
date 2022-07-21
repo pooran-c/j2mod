@@ -75,7 +75,8 @@ public class DoFc42 {
 		int counter = 1;
 		for (byte[] b : newArray) {
 
-			FC42WriteTaskRequest fc42WriteTaskRequest = new FC42WriteTaskRequest(counter);
+			
+			FC42WriteTaskRequest fc42WriteTaskRequest = new FC42WriteTaskRequest(Utils.hexStringToByteArray(counter, 4, 2));
 			fc42WriteTaskRequest.setRegister(new SimpleRegister(b));
 
 			counter++;

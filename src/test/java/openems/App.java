@@ -1,6 +1,9 @@
 package openems;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -38,7 +41,9 @@ public class App {
 		public static final int CODE_43 = 67;
 		public static final int CODE_44 = 68;
 		public static final int UNITD_ID = 1;
-		private final static int SIZEOFPAYLOAD = 128;
+		public static final int SIZEOFPAYLOAD = 128;
+		public static final int HUNDRED_PERCENT_COMPLETE = 5;
+		public static final int SLEEP_TIME = 200; // ms
 
 	}
 
@@ -53,7 +58,24 @@ public class App {
 	}
 
 	public static void main(String[] args) throws InterruptedException {
+		
+		
+		try {
+			PrintStream o = new PrintStream(new File("log_output2.txt"));
+			
+			System.setOut(o);
+			
+			
+		} catch (FileNotFoundException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 
+//		PrintStream console = System.out;
+//		
+//		System.setOut(console);
+
+		
 		if (args.length < 3) {
 			printUsage();
 			killProcess();
@@ -92,37 +114,46 @@ public class App {
 			isFinished = false;
 			switch (stateMachine) {
 			case FC40:
+				System.out.println("In Fc 40 state");
 
 				FC40WriteTaskResponse fc40WriteTaskResponse = getFc40ResponseRTU(transport1, //
 						Integer.parseInt(SizeOfUpdateFile));
 
-//				if (fc40WriteTaskResponse.getFunctionCode() == Codes.CODE_40) {
-//					System.out.println("-----------------------------------------");
-//					System.out.println("Step 1 finished, Chech the response below");
-//					System.out.println(fc40WriteTaskResponse.getHexMessage());
-//
-//					isFinished = changeState(StateMachine.FC41);
-//					break;
-//				}
-				isFinished = changeState(StateMachine.FC41);
-				Thread.sleep(500);
+				if (fc40WriteTaskResponse.getFunctionCode() == Codes.CODE_40 && //
+						fc40WriteTaskResponse.getResponseData() == 1 /* one is success */) {
+
+					System.out.println("Read Data Fc40 : " + fc40WriteTaskResponse.getHexMessage());
+					System.out.println("File size OK!");
+					// Move to second step
+					isFinished = changeState(StateMachine.FC41);
+					break;
+				}
+
+				isFinished = changeState(StateMachine.FC40);
+
+				// Sleep after one request
+				Thread.sleep(Codes.SLEEP_TIME);
 				break;
 			case FC41:
-
+				System.out.println("In Fc 41 state");
 				FC41WriteTaskResponse fc41WriteTaskResponse = getFc41ResponseRTU(transport2);
 
-//				if (fc41WriteTaskResponse.getFunctionCode() == Codes.CODE_41) {
-//					System.out.println("-----------------------------------------");
-//					System.out.println("Step 2 finished, Chech the response below");
-//					System.out.println(fc41WriteTaskResponse.getHexMessage());
-//					isFinished = changeState(StateMachine.FC42);
-//					break;
-//				}
+				if (fc41WriteTaskResponse.getFunctionCode() == Codes.CODE_41 && //
+						fc41WriteTaskResponse.getResponseData() == 1 /* one is success */) {
 
-				isFinished = changeState(StateMachine.FC42);
-				Thread.sleep(3000);
+					System.out.println("Read Data  Fc41 : " + fc41WriteTaskResponse.getHexMessage());
+					System.out.println("Erase Flash OK!");
+					isFinished = changeState(StateMachine.FC42);
+					break;
+				}
+
+				isFinished = changeState(StateMachine.FC41);
+
+				// Sleep after one request
+				Thread.sleep(Codes.SLEEP_TIME);
 				break;
 			case FC42:
+				System.out.println("In Fc 42 state");
 				boolean isSuccesful = false;
 				byte[] allBytes = null;
 				try {
@@ -130,44 +161,67 @@ public class App {
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
-
+				System.out.println("Start Send Data ...");
 				isSuccesful = getFc42ResponseRTU(transport3, allBytes);
 
 				if (isSuccesful) {
+					System.out.println("Send Data Finish CMD!");
 					isFinished = changeState(StateMachine.FC43);
 				} else {
 					isFinished = changeState(StateMachine.FC42);
 				}
-				Thread.sleep(500);
+				Thread.sleep(Codes.SLEEP_TIME);
 				break;
 			case FC43:
-
+				System.out.println("In Fc 43 state");
 				FC43WriteTaskResponse fc43WriteTaskResponse = getFc43ResponseRTU(transport4);
 
-				if (fc43WriteTaskResponse.getFunctionCode() == Codes.CODE_43) {
-					System.out.println("-----------------------------------------");
-					System.out.println("Step 4 finished, Chech the response below");
-					System.out.println(fc43WriteTaskResponse.getHexMessage());
+				System.out.println("respose code : " + fc43WriteTaskResponse.getResponseData());
+
+				if (fc43WriteTaskResponse
+						.getFunctionCode() == Codes.CODE_43 /*
+															 * && // fc43WriteTaskResponse.getResponseData() == 1 one is
+															 * success
+															 */) {
+
+					System.out.println("Read Data  Fc43 : " + fc43WriteTaskResponse.getHexMessage());
+					System.out.println("Data Verified!");
 					isFinished = changeState(StateMachine.FC44);
 					break;
 				}
 
 				isFinished = changeState(StateMachine.FC43);
+
+				// Sleep after one request
+				Thread.sleep(Codes.SLEEP_TIME);
 				break;
 			case FC44:
+				System.out.println("In Fc 44 state");
+				System.out.println(" Query slaver upgrade progress...");
+				int responseStatus = 0;
 
-				FC44WriteTaskResponse fc44WriteTaskResponse = getFc44ResponseRTU(transport5);
+				while (responseStatus != Codes.HUNDRED_PERCENT_COMPLETE) {
+					FC44WriteTaskResponse fc44WriteTaskResponse = getFc44ResponseRTU(transport5);
+					int responseFunctionCode = fc44WriteTaskResponse.getFunctionCode();
+					responseStatus = fc44WriteTaskResponse.getResponseData();
+					int responseData = fc44WriteTaskResponse.getResponseStatus();
+					
+					System.out.println("responseStatus : " + responseStatus + " and responseData : " + responseData);
+					System.out.println("Read Data  Fc44 : " + fc44WriteTaskResponse.getHexMessage());
+					System.out.println(" The update query is " + responseStatus + " % complete");
 
-				// Logic to chekc if this is finished
-				if (fc44WriteTaskResponse.getFunctionCode() == Codes.CODE_44) {
-					System.out.println("-----------------------------------------");
-					System.out.println("Step 5 finished, Chech the response below");
-					System.out.println(fc44WriteTaskResponse.getHexMessage());
-					isFinished = changeState(StateMachine.FINISHED);
-					break;
+					if (responseFunctionCode == Codes.CODE_44 && //
+							responseData == Codes.HUNDRED_PERCENT_COMPLETE) {
+
+						isFinished = changeState(StateMachine.FINISHED);
+						break;
+					}
 				}
+				// Sleep after one request
+				Thread.sleep(Codes.SLEEP_TIME);
 				isFinished = changeState(StateMachine.FC44);
-				break;
+				// break;
+
 			case FINISHED:
 				System.out.println("Update Finished");
 				break;
@@ -187,11 +241,14 @@ public class App {
 	 */
 	private static FC40WriteTaskResponse getFc40ResponseRTU(ModbusRTUTransport transport, int sizeOfTheUpdateFile) {
 
-		byte[] sizeOfTheUpdateFileToByte = Utils.hexStringToByteArray(sizeOfTheUpdateFile);
+		byte[] sizeOfTheUpdateFileToByte = Utils.hexStringToByteArray(sizeOfTheUpdateFile, 8, 4);
 
 		FC40WriteTaskRequest fc40WriteTaskRequest = new FC40WriteTaskRequest();
 		fc40WriteTaskRequest.setRegister(new SimpleRegister(sizeOfTheUpdateFileToByte));
 		fc40WriteTaskRequest.setUnitID(Codes.UNITD_ID);
+
+		System.out.println("Send File Size!");
+		System.out.println("WriteData FC40: " + fc40WriteTaskRequest.getHexMessage());
 
 		return (FC40WriteTaskResponse) executeProcess(transport, fc40WriteTaskRequest);
 
@@ -208,6 +265,9 @@ public class App {
 		FC41WriteTaskRequest fc41WriteTaskRequest = new FC41WriteTaskRequest();
 		fc41WriteTaskRequest.setUnitID(Codes.UNITD_ID);
 
+		System.out.println("Erase Flash ...");
+		System.out.println("WriteData FC41: " + fc41WriteTaskRequest.getHexMessage());
+
 		return (FC41WriteTaskResponse) executeProcess(transport, fc41WriteTaskRequest);
 
 	}
@@ -223,23 +283,47 @@ public class App {
 	private static boolean getFc42ResponseRTU(ModbusRTUTransport transport, byte[] allBytes) {
 
 		byte[][] payLoad = Utils.getData(allBytes, Codes.SIZEOFPAYLOAD);
+		int FrameCounter = 1;
 
-		int counter = 1;
+		boolean isSendDataFinished = false;
+
 		for (byte[] load : payLoad) {
 
-			FC42WriteTaskRequest fc42WriteTaskRequest = new FC42WriteTaskRequest(counter);
+			FC42WriteTaskRequest fc42WriteTaskRequest = new FC42WriteTaskRequest(
+					Utils.hexStringToByteArray(FrameCounter, 4, 2));
 			fc42WriteTaskRequest.setRegister(new SimpleRegister(load));
+			fc42WriteTaskRequest.setUnitID(Codes.UNITD_ID);
 
-			counter++;
+			// FC42WriteTaskRequest fc42WriteTaskRequest = new FC42WriteTaskRequest(
+			// Utils.hexStringToByteArray(FrameCounter, 4, 2));
+			// fc42WriteTaskRequest.setRegister(new SimpleRegister(load));
+
+			System.out.println(" Write Data Fc42 : " + fc42WriteTaskRequest.getHexMessage());
 
 			FC42WriteTaskResponse fc42response = (FC42WriteTaskResponse) executeProcess(transport, //
 					fc42WriteTaskRequest);
-			System.out.println("SendDataPacket " + counter + " success! -> " + fc42response.getHexMessage());
+
+			
+
+			if (fc42response.getFunctionCode() == Codes.CODE_42 && //
+					fc42response.getResponseData() == 1) {
+				System.out.println("Read Data  Fc42 : " + fc42response.getHexMessage());
+				System.out.println("SendDataPacket " + FrameCounter + " success! ");
+				isSendDataFinished = true;
+			} else {
+				isSendDataFinished = false;
+			}
+			FrameCounter++;
+			// Sleep after each request
+			try {
+				Thread.sleep(Codes.SLEEP_TIME);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 
 		}
 
-		System.out.println("Send Data Finish CMD!");
-		return true;
+		return isSendDataFinished;
 
 	}
 
@@ -254,6 +338,8 @@ public class App {
 		FC43WriteTaskRequest fc43WriteTaskRequest = new FC43WriteTaskRequest();
 		fc43WriteTaskRequest.setUnitID(Codes.UNITD_ID);
 
+		System.out.println("Verify Data!");
+		System.out.println("Write Data Fc43 : " + fc43WriteTaskRequest.getHexMessage());
 		return (FC43WriteTaskResponse) executeProcess(transport, fc43WriteTaskRequest);
 	}
 
@@ -267,6 +353,9 @@ public class App {
 
 		FC44WriteTaskRequest fc44WriteTaskRequest = new FC44WriteTaskRequest();
 		fc44WriteTaskRequest.setUnitID(Codes.UNITD_ID);
+		
+
+		System.out.println("Write Data Fc44 : " + fc44WriteTaskRequest.getHexMessage());
 
 		return (FC44WriteTaskResponse) executeProcess(transport, fc44WriteTaskRequest);
 	}
