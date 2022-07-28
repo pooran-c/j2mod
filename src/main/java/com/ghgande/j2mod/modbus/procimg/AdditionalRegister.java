@@ -26,47 +26,45 @@ package com.ghgande.j2mod.modbus.procimg;
  * @author Steve O'Hara (4NG)
  * @version 2.0 (March 2016)
  */
-public class AdditionalRegister extends SynchronizedAbstractRegister implements Register {
+public class AdditionalRegister extends SynchronizedAbstractRegister1 implements Register {
 
-	/**
-	 * Constructs a new <tt>SimpleRegister</tt> instance.
-	 *
-	 * @param b1 the first (hi) byte of the word.
-	 * @param b2 the second (low) byte of the word.
-	 */
-	public AdditionalRegister(byte[] bytes) {
-		for (int i = 0; i < bytes.length; i++) {
-			register.add(i, bytes[i]);
-		}
-		setValue(bytes);
-	}
+	 /**
+     * Constructs a new <tt>SimpleRegister</tt> instance.
+     *
+     * @param b1 the first (hi) byte of the word.
+     * @param b2 the second (low) byte of the word.
+     */
+    public AdditionalRegister(byte b1, byte b2) {
+        register[0] = b1;
+        register[1] = b2;
+    }
 
-	/**
-	 * Constructs a new <tt>SimpleRegister</tt> instance with the given value.
-	 *
-	 * @param value the value of this <tt>SimpleRegister</tt> as <tt>int</tt>.
-	 */
-	public AdditionalRegister(int value) {
-		setValue(value);
-	}
+    /**
+     * Constructs a new <tt>SimpleRegister</tt> instance with the given value.
+     *
+     * @param value the value of this <tt>SimpleRegister</tt> as <tt>int</tt>.
+     */
+    public AdditionalRegister(int value) {
+        setValue(value);
+    }
 
-	/**
-	 * Constructs a new <tt>SimpleRegister</tt> instance. It's state will be
-	 * invalid.
-	 *
-	 * Attempting to access this register will result in an
-	 * IllegalAddressException(). It may be used to create "holes" in a Modbus
-	 * register map.
-	 */
-	public AdditionalRegister() {
-		register = null;
-	}
+    /**
+     * Constructs a new <tt>SimpleRegister</tt> instance. It's state will be
+     * invalid.
+     *
+     * Attempting to access this register will result in an
+     * IllegalAddressException(). It may be used to create "holes" in a Modbus
+     * register map.
+     */
+    public AdditionalRegister() {
+        register = null;
+    }
 
-	public String toString() {
-		if (register == null) {
-			return "invalid";
-		}
+    public String toString() {
+        if (register == null) {
+            return "invalid";
+        }
 
-		return getValue() + "";
-	}
+        return getValue() + "";
+    }
 }

@@ -52,7 +52,7 @@ public class ModbusMasterFactory {
         if (parts.length < 2) {
             throw new IllegalArgumentException("missing connect+ion information");
         }
-        int baudRate = 9600;
+        int baudRate = 19200;
         if (System.getProperty("com.ghgande.j2mod.modbus.baud") != null) {
             baudRate = Integer.parseInt(System.getProperty("com.ghgande.j2mod.modbus.baud"));
         }
@@ -75,7 +75,7 @@ public class ModbusMasterFactory {
             try {
                 ModbusRTUTransport transport = new ModbusRTUTransport();
                 if (serialConnection == null) {
-                    transport.setCommPort(SerialConnection.getCommPort(parms.getPortName()));
+					transport.setCommPort(SerialConnection.getCommPort(parms.getPortName()));
                 }
                 else {
                     transport.setCommPort(serialConnection);

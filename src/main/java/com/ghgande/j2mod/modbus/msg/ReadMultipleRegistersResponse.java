@@ -17,7 +17,7 @@ package com.ghgande.j2mod.modbus.msg;
 
 import com.ghgande.j2mod.modbus.Modbus;
 import com.ghgande.j2mod.modbus.procimg.Register;
-import com.ghgande.j2mod.modbus.procimg.SimpleRegister;
+import com.ghgande.j2mod.modbus.procimg.AdditionalRegister;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -161,7 +161,7 @@ public class ReadMultipleRegistersResponse extends ModbusResponse {
         registers = new Register[getWordCount()];
 
         for (int k = 0; k < getWordCount(); k++) {
-            registers[k] = new SimpleRegister(din.readByte(), din.readByte());
+            registers[k] = new AdditionalRegister(din.readByte(), din.readByte());
         }
 
         setDataLength(byteCount + 1);

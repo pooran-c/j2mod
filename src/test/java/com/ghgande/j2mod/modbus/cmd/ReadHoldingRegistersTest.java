@@ -18,8 +18,12 @@ package com.ghgande.j2mod.modbus.cmd;
 import com.ghgande.j2mod.modbus.ModbusException;
 import com.ghgande.j2mod.modbus.io.*;
 import com.ghgande.j2mod.modbus.msg.*;
+import com.ghgande.j2mod.modbus.net.AbstractSerialConnection;
 import com.ghgande.j2mod.modbus.net.ModbusMasterFactory;
+import com.ghgande.j2mod.modbus.net.SerialConnection;
 import com.ghgande.j2mod.modbus.procimg.Register;
+import com.ghgande.j2mod.modbus.util.SerialParameters;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +69,17 @@ public class ReadHoldingRegistersTest {
         int count = 0;
         int repeat = 1;
         int unit = 0;
+        
+		SerialParameters parms = new SerialParameters();
+
+		parms.setPortName("COM3");
+		parms.setBaudRate(19200);
+		parms.setOpenDelay(1000);
+		parms.setDatabits(8);
+		parms.setParity(AbstractSerialConnection.NO_PARITY);
+		parms.setStopbits(1);
+		parms.setFlowControlIn(AbstractSerialConnection.FLOW_CONTROL_DISABLED);
+		parms.setEcho(false);
 
         // 1. Setup parameters
         if (args.length < 3) {
@@ -75,7 +90,8 @@ public class ReadHoldingRegistersTest {
         try {
             try {
                 // 2. Open the connection.
-                transport = ModbusMasterFactory.createModbusMaster(args[0]);
+            	SerialConnection serialConnection = new SerialConnection(parms);
+				transport = ModbusMasterFactory.createModbusMaster(args[0] , serialConnection);
 
                 if (transport == null) {
                     System.out.printf("Cannot open %s", args[0]);
@@ -117,7 +133,7 @@ public class ReadHoldingRegistersTest {
             }
 
             // 3. Create the command.
-            req = new ReadMultipleRegistersRequest(ref, count);
+            req = new ReadMultipleRegistersRequest(ref, 1);
             req.setUnitID(unit);
 
             // 4. Prepare the transaction

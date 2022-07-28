@@ -12,6 +12,13 @@ public class FC41WriteTaskResponse extends ModbusResponse {
 	private int msgLength;
 	private int responseData;
 
+	public FC41WriteTaskResponse() {
+		super();
+		setMsgLength(LENGTH_OF_MSG);
+		setDataLength(2);
+		setFunctionCode(Modbus.FUNCTION_CODE_41);
+	}
+
 	public int getResponseData() {
 		return responseData;
 	}
@@ -35,17 +42,10 @@ public class FC41WriteTaskResponse extends ModbusResponse {
 		setFunctionCode(Modbus.FUNCTION_CODE_41);
 	}
 
-	public FC41WriteTaskResponse() {
-		super();
-		setMsgLength(LENGTH_OF_MSG);
-		setDataLength(2);
-		setFunctionCode(Modbus.FUNCTION_CODE_41);
-	}
-
 	@Override
 	public void writeData(DataOutput dout) throws IOException {
 		dout.write(getMsgLength());
-		dout.write(getMessage());
+		dout.write(getResponseData());
 	}
 
 	@Override
@@ -57,9 +57,13 @@ public class FC41WriteTaskResponse extends ModbusResponse {
 
 	@Override
 	public byte[] getMessage() {
+
 		byte[] result = new byte[2];
-		result[0] = (byte) ((responseData) & 0xff);
-		result[1] = (byte) ((responseData));
+//		result[0] = (byte) ((responseData) & 0xff);
+//		result[1] = (byte) ((responseData));
+
+		result[0] = (byte) ((responseData >> 8) & 0xff);
+		result[1] = (byte) (responseData & 0xff);
 
 		return result;
 	}

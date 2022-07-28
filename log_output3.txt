@@ -1,0 +1,8 @@
+Version of the file is :  1.0
+Reqeusting bms version!
+WriteData for bms version: 00 00 00 00 00 06 01 03 27 10 00 01
+
+Modbus Request Message
+39 | 16 | 0 | 1 | 
+Version of the BMS : 0.0
+Killing the process

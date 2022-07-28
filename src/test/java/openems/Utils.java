@@ -22,10 +22,10 @@ public class Utils {
 
 		for (int i = 0; i < sb.length() / 2; i++) {
 
-			System.out.println("Substring is : " + sb.substring(2 * i, 2 * i + 2) + //
-					" parsed int is " + Integer.parseInt(sb.substring(2 * i, 2 * i + 2), 16) + //
-					" Shifting : " + (0xFF & (Integer.parseInt(sb.substring(2 * i, 2 * i + 2), 16))) +//
-					" into bytes : " + (byte) (0xFF & (Integer.parseInt(sb.substring(2 * i, 2 * i + 2), 16))));
+//			System.out.println("Substring is : " + sb.substring(2 * i, 2 * i + 2) + //
+//					" parsed int is " + Integer.parseInt(sb.substring(2 * i, 2 * i + 2), 16) + //
+//					" Shifting : " + (0xFF & (Integer.parseInt(sb.substring(2 * i, 2 * i + 2), 16))) +//
+//					" into bytes : " + (byte) (0xFF & (Integer.parseInt(sb.substring(2 * i, 2 * i + 2), 16))));
 			
 			
 			data[i] = (byte) (0xFF & (Integer.parseInt(sb.substring(2 * i, 2 * i + 2), 16)));

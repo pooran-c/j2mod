@@ -54,6 +54,8 @@ public class FC44WriteTaskResponse extends ModbusResponse {
 	@Override
 	public void writeData(DataOutput dout) throws IOException {
 		dout.write(getMsgLength());
+		dout.write(getResponseStatus());
+		dout.write(getResponseData());
 	}
 
 	@Override
