@@ -1,4 +1,4 @@
-package openems;
+package com.openems.update;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,14 +36,17 @@ import com.ghgande.j2mod.modbus.util.SerialParameters;
 /**
  * usage : java -jar ATLBATTERYUPDATE.jar <Portname> <baudrate>
  * <PathOfTheUpdateFile> <ForceUpdate> <writeToLog> example : java -jar
- * ATLBATTERYUPDATE.jar COM2 19200 \"C:\\ATLUPDATE\\feneconR0.0.bin\"" );
+ * batteryUpdateV2.5.5.jar COM2 19200 \"C:\\ATLUPDATE\\feneconR0.0.bin\"" );
  *
  */
-public class App {
+public class AppTest {
 
 	// Initial state
 	public static StateMachine stateMachine = StateMachine.FC40;
+	//public static StateMachine stateMachine = StateMachine.FINISHED;
 	public static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSS");
+
+	public static int MainUpdateStatus = 0;
 
 	// Necessary Codes
 	public static class Codes {
@@ -73,15 +76,16 @@ public class App {
 	public static void main(String[] args) throws InterruptedException, IOException {
 
 		if (args.length < 3) {
-			printUsage();
+			printUsage(args);
 			killProcess();
 		}
 
-		boolean writeToLogFile = true;
+		boolean writeToLogFile = false; //Boolean.parseBoolean(args[4]);
 
 		if (writeToLogFile) {
 			try {
-				PrintStream o = new PrintStream(new File("log_output7.txt"));
+				System.out.println("Writing into log file");
+				PrintStream o = new PrintStream(new File(LocalDateTime.now() + "_log.txt"));
 				System.setOut(o);
 			} catch (FileNotFoundException e2) {
 				e2.printStackTrace();
@@ -93,12 +97,30 @@ public class App {
 
 		String PORT_NAME = args[0];
 		String BAUD_RATE = args[1];
-		String s = args[2];
-		String PATH = args[3];
+		String PATH = args[2];
 		int SIZE_OF_THE_UPDATE_FILE = (int) new File(PATH).length();
 
+		boolean forceUpdate = Boolean.parseBoolean(args[3]);
+
+		System.out.println();
+		System.out.println("PortName : " + PORT_NAME + "| BaudRate : " + BAUD_RATE + "| Size of the UpdateFile : "
+				+ SIZE_OF_THE_UPDATE_FILE + " kb" + " | forceUpdate : " + forceUpdate);
+
 		SerialParameters params = getSerialParam(PORT_NAME, BAUD_RATE);
+
 		SerialConnection serialConnection = new SerialConnection(params);
+
+		if (!serialConnection.isOpen()) {
+			try {
+				serialConnection.open();
+				System.out.println("Connection via [" + PORT_NAME + "] Success: " );
+			} catch (Exception e) {
+				System.out.println("Connection via [" + PORT_NAME + "] failed: " + e.getMessage());
+				System.out.println();
+				e.printStackTrace();
+				killProcess();
+			}
+		}
 
 		ModbusRTUTransport transport0 = new ModbusRTUTransport();
 		ModbusRTUTransport transport1 = new ModbusRTUTransport();
@@ -128,25 +150,27 @@ public class App {
 		String fileVersion = getFileVersion(PATH);
 
 		try {
-			ReadMultipleRegistersResponse readMultipleRegistersResponse = getReadMultipleRegistersResponse(transport0);
 
-			String bmsVersion = getBmsVersion(readMultipleRegistersResponse.getRegisters());
+			if (forceUpdate) {
 
-			float bv = Float.parseFloat(bmsVersion);
-			float fv = Float.parseFloat(fileVersion);
+				ReadMultipleRegistersResponse readMultipleRegistersResponse = getReadMultipleRegistersResponse(
+						transport0);
 
-			printLog("Version of the BMS is : " + bv);
-			printLog("Version of the file is : " + fv);
+				String bmsVersion = getBmsVersion(readMultipleRegistersResponse.getRegisters());
 
-//		if (fv <= bv) {
-//
-//			printLog("Same version , no need to update");
-//			System.out.println("[" + dtf.format(LocalDateTime.now()) + "] -->  "+"Same version , no need to update");
-//			killProcess();
-//		} else {
-//			printLog("Make the update");
-//			System.out.println("[" + dtf.format(LocalDateTime.now()) + "] -->  "+"Make the update");
-//		}
+				float bv = Float.parseFloat(bmsVersion);
+				float fv = Float.parseFloat(fileVersion);
+
+				printLog("Version of the BMS is : " + bv);
+				printLog("Version of the file is : " + fv);
+
+				if (fv <= bv) {
+					printLog("Same version , no need to update");
+					killProcess();
+				} else {
+					printLog("Make the update");
+				}
+			}
 
 			boolean isFinished;
 			do {
@@ -157,6 +181,9 @@ public class App {
 
 					FC40WriteTaskResponse fc40WriteTaskResponse = getFc40ResponseRTU(transport1, //
 							SIZE_OF_THE_UPDATE_FILE);
+
+					System.out.println(
+							"fc40WriteTaskResponse.getFunctionCode() : " + fc40WriteTaskResponse.getFunctionCode());
 
 					if (fc40WriteTaskResponse.getFunctionCode() == Codes.CODE_40 && //
 							fc40WriteTaskResponse.getResponseData() == 1 /* one is success */) {
@@ -240,25 +267,24 @@ public class App {
 					break;
 				case FC44:
 					printLog("In Fc 44 state");
-					printLog(" Query slaver upgrade progress...");
-					int responseStatus = 0;
+					printLog(" Query, slave upgrade progress...");
 
-					while (responseStatus != Codes.HUNDRED_PERCENT_COMPLETE) {
+					while (MainUpdateStatus != Codes.HUNDRED_PERCENT_COMPLETE) {
 						FC44WriteTaskResponse fc44WriteTaskResponse = getFc44ResponseRTU(transport5);
-						int responseFunctionCode = fc44WriteTaskResponse.getFunctionCode();
-						responseStatus = fc44WriteTaskResponse.getResponseData();
-						int responseData = fc44WriteTaskResponse.getResponseStatus();
 
-						printLog("responseStatus : " + responseStatus + " and responseData : " + responseData);
 						printLog("Read Data  Fc44 : " + fc44WriteTaskResponse.getHexMessage());
-						printLog(" The update query is " + responseStatus + " % complete");
+						printLog(" Update is " + fc44WriteTaskResponse.getResponseData() + " % complete");
 
-						if (responseFunctionCode == Codes.CODE_44 && //
-								responseData == Codes.HUNDRED_PERCENT_COMPLETE) {
+						int functionCode = fc44WriteTaskResponse.getFunctionCode();
+						MainUpdateStatus = fc44WriteTaskResponse.getResponseStatus();
+
+						if (functionCode == Codes.CODE_44 && //
+								MainUpdateStatus == Codes.HUNDRED_PERCENT_COMPLETE) {
 							transport5.close();
 							isFinished = changeState(StateMachine.FINISHED);
 							break;
 						}
+
 					}
 					// Sleep after one request
 					Thread.sleep(Codes.SLEEP_TIME);
@@ -266,7 +292,17 @@ public class App {
 					break;
 
 				case FINISHED:
-					printLog("Update Finished");
+					
+					ReadMultipleRegistersResponse readMultipleRegistersResponse = getReadMultipleRegistersResponse(
+							transport0);
+
+					String bmsVersion = getBmsVersion(readMultipleRegistersResponse.getRegisters());
+					
+					printLog("Updated to " + bmsVersion + " version");
+					
+					PrintStream console = System.out;
+					System.setOut(console);
+					printLog("Updated to " + bmsVersion + " version");
 					isFinished = false;
 					break;
 
@@ -276,7 +312,7 @@ public class App {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {
-			System.out.println("entered finally");
+			printLog("Closing all the transports");
 			transport0.close();
 			transport1.close();
 			transport2.close();
@@ -381,10 +417,8 @@ public class App {
 					fc42response.getResponseData() == 1) {
 
 				printLog("Read Data  Fc42 : " + fc42response.getHexMessage());
-				printLog("SendDataPacket " + FrameCounter + " success! " + 
-						Math.floor(
-								(((float) FrameCounter / (float) payloadSize)) * 100 )
-						+ " % complete");
+				printLog("SendDataPacket " + FrameCounter + " success! "
+						+ Math.floor((((float) FrameCounter / (float) payloadSize)) * 100) + " % complete");
 
 				isSendDataFinished = true;
 			} else {
@@ -471,6 +505,7 @@ public class App {
 		params.setPortName(portName);
 		params.setBaudRate(Integer.parseInt(baudRate));
 		params.setOpenDelay(1000);
+		params.setEncoding("rtu");
 		params.setDatabits(8);
 		params.setParity(AbstractSerialConnection.NO_PARITY);
 		params.setStopbits(1);
@@ -488,6 +523,7 @@ public class App {
 	 */
 	private static boolean changeState(StateMachine nextState) {
 		if (stateMachine != nextState) {
+			printLog("Chaging State from " + stateMachine + " --> to --> " + nextState);
 			stateMachine = nextState;
 			return true;
 		}
@@ -495,12 +531,31 @@ public class App {
 	}
 
 	/**
+	 * 
 	 * java -jar ATLBATTERYUPDATE.jar port_name baud_rate size_of_the_updatefile
 	 * path_of_the_update_file
 	 */
-	private static void printUsage() {
+
+	/**
+	 * Prints out the command, how to run the jar file
+	 * 
+	 * @param args list of arguments
+	 * 
+	 */
+	private static void printUsage(String[] args) {
+		// batteryUpdateV2.5.5
 		System.out.printf(
-				"\nUsage:\n  java -jar ATLBATTERYUPDATE.jar COM2 19200 123456 \"C:\\ATLUPDATE\\feneconR0.0.bin\"");
+				"\nUsage:\n  java -jar <JARNAME.jar> <PORTNAME> <BAUDRATE> <PATH of the UPDATE FILE> <boolean force update(true or false)>");
+		System.out.println("But the command was, <JARNAME.jar> = Hint batteryUpdateV2.5.5 true");
+
+		String params = "";
+		if (args.length > 0) {
+			for (String s : args) {
+				params = " " + s;
+			}
+		}
+		System.out.println("java -jar " + params);
+
 	}
 
 	/**
@@ -527,6 +582,12 @@ public class App {
 		return version + "." + subVersion;
 	}
 
+	/**
+	 * pre-processing to get the current bms version
+	 * 
+	 * @param reg
+	 * @return String bms version
+	 */
 	private static String getBmsVersion(Register[] reg) {
 
 		String s = "";
@@ -545,6 +606,9 @@ public class App {
 		return s;
 	}
 
+	/**
+	 * Print the log
+	 */
 	private static void printLog(String msg) {
 		System.out.println("[" + DATE_TIME_FORMATTER.format(LocalDateTime.now()) + "] -->  " + msg);
 	}

@@ -23,6 +23,9 @@ import com.ghgande.j2mod.modbus.io.ModbusRTUTransport;
 import com.ghgande.j2mod.modbus.io.ModbusSerialTransport;
 import com.ghgande.j2mod.modbus.util.ModbusUtil;
 import com.ghgande.j2mod.modbus.util.SerialParameters;
+
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,6 +79,7 @@ public class SerialConnection extends AbstractSerialConnection {
      */
     public static AbstractSerialConnection getCommPort(String commPort) {
         SerialConnection jSerialCommPort = new SerialConnection();
+       // RXTXPort.serialPort = SerialPort.getCommPort(commPort);
         jSerialCommPort.serialPort = SerialPort.getCommPort(commPort);
         return jSerialCommPort;
     }
@@ -146,7 +150,7 @@ public class SerialConnection extends AbstractSerialConnection {
         if (serialPort != null) {
             serialPort.setComPortParameters(parameters.getBaudRate(), parameters.getDatabits(), parameters.getStopbits(), parameters.getParity());
             serialPort.setFlowControl(parameters.getFlowControlIn() | parameters.getFlowControlOut());
-            serialPort.setRs485ModeParameters(parameters.getRs485Mode(), parameters.getRs485TxEnableActiveHigh(), parameters.getRs485EnableTermination(), parameters.getRs485RxDuringTx(), parameters.getRs485DelayBeforeTxMicroseconds(), parameters.getRs485DelayAfterTxMicroseconds());
+            //serialPort.setRs485ModeParameters(parameters.getRs485Mode(), parameters.getRs485TxEnableActiveHigh(), parameters.getRs485EnableTermination(), parameters.getRs485RxDuringTx(), parameters.getRs485DelayBeforeTxMicroseconds(), parameters.getRs485DelayAfterTxMicroseconds());
         }
     }
 
